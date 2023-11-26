@@ -1,0 +1,23 @@
+repos:
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        entry: black --config source/backend/pyproject.toml .
+        language: system
+        types: [python3]
+        pass_filenames: false
+
+      - id: ruff
+        name: ruff
+        entry: ruff format --config source/backend/pyproject.toml .
+        language: system
+        types: [python3]
+        pass_filenames: false
+
+      - id: mypy
+        name: mypy
+        entry: mypy --config-file source/backend/pyproject.toml .
+        language: system
+        types: [python3]
+        pass_filenames: false
