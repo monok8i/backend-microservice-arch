@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import environs
 
 from typing import Optional, Any
@@ -44,7 +46,10 @@ class Settings(BaseSettings):
 
     @property
     class Validation(BaseSettings):
-        pass
+        ACCESS_TOKEN_EXPIRE_MINUTES: int = 2
+        JWT_PRIVATE_KEY: Path = env.path("JWT_PRIVATE_PATH")
+        JWT_PUBLIC_KEY: Path = env.path("JWT_PUBLIC_PATH")
+        ALGORITHM: str = 'RS256'
 
 
 settings = Settings()
