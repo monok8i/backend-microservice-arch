@@ -1,9 +1,7 @@
-import uuid
 from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
-
-from uuid import UUID
 
 
 class UserBase(BaseModel):

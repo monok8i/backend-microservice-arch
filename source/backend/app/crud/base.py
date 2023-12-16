@@ -1,7 +1,6 @@
 from typing import Any, Generic, Optional, Type, TypeVar
 
 from pydantic import BaseModel
-
 from sqlalchemy import select, ScalarResult
 from sqlalchemy.ext.asyncio import AsyncSession
 

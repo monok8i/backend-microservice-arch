@@ -1,9 +1,8 @@
-import jwt
 from typing import AsyncGenerator, Annotated
 
+import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
@@ -19,9 +18,7 @@ async def async_session() -> AsyncGenerator:
         yield session
 
 
-reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1}/login/"
-)
+reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1}/login/")
 
 
 DbSession = Annotated[AsyncSession, Depends(async_session)]
@@ -34,8 +31,7 @@ async def get_current_user(db_session: DbSession, token: TokenDep) -> User:
         token = TokenPayload(**payload)
     except jwt.exceptions.InvalidTokenError:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid token"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Invalid token"
         )
     user = await db_session.scalar(select(User).filter(User.user_id == token.sub))
     if not user:
@@ -53,4 +49,3 @@ def get_current_active_user(
 
 
 CurrentUser = Annotated[User, Depends(get_current_active_user)]
-

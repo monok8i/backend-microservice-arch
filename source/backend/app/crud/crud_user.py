@@ -1,16 +1,12 @@
-import uuid
-
 from typing import Optional
 
 from pydantic import EmailStr
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from source.backend.app.core import security
 from source.backend.app.models import User
 from source.backend.app.schemas.user import UserCreate, UserUpdate
-from source.backend.app.core import security
-
 from .base import CRUDBase
 
 
@@ -45,7 +41,6 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     async def authenticate(
         self, db_session: AsyncSession, *, email: EmailStr, password: str
     ) -> Optional[User]:
-        
         user = await self.get_by_email(db_session, email=email)
 
         if not user:

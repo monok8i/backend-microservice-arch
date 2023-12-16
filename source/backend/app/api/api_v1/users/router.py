@@ -2,12 +2,10 @@ from typing import List, Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_cache.decorator import cache
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from source.backend.app import crud, models, schemas
+from source.backend.app import crud, schemas
 from source.backend.app.api.deps import async_session
-
 from ...deps import CurrentUser
 
 router = APIRouter()
@@ -19,7 +17,7 @@ async def me(current_user: CurrentUser) -> schemas.User:
 
 
 @router.get("/", response_model=List[schemas.User])
-@cache(expire=60, namespace='users')
+@cache(expire=60, namespace="users")
 async def read_users(
     db_session: AsyncSession = Depends(async_session),
     *,

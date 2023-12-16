@@ -1,12 +1,10 @@
 from pathlib import Path
+from typing import Optional, Any
 
 import environs
-
-from typing import Optional, Any
 from pydantic import PostgresDsn, field_validator, RedisDsn
 from pydantic_core.core_schema import FieldValidationInfo
 from pydantic_settings import BaseSettings
-
 
 __env_path__ = "source/.env"
 env = environs.Env()

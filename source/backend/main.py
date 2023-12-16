@@ -1,10 +1,7 @@
 import uvicorn
-import uuid
-
-from fastapi import FastAPI, status
+from fastapi import FastAPI
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
-
 from redis.asyncio import ConnectionPool, Redis
 
 from source.backend.app.api import api_router
@@ -18,7 +15,7 @@ app.include_router(api_router, prefix=settings.API_V1)
 async def startup() -> None:
     pool = ConnectionPool.from_url(url=settings.Redis.REDIS_URI)
     redis = Redis(connection_pool=pool)
-    FastAPICache.init(RedisBackend(redis=redis), prefix='redis_cache')
+    FastAPICache.init(RedisBackend(redis=redis), prefix="redis_cache")
 
 
 def main() -> None:
