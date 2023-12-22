@@ -75,5 +75,11 @@ class Settings(BaseSettings):
                 )
             )
 
+    @property
+    class SSLContext(BaseSettings):
+        SSL_CERTIFICATE: Path = env.path("SSL_CERTIFICATE_PATH")
+        SSL_KEY: Path = env.path("SSL_KEY_PATH")
+
+
 
 settings = Settings()

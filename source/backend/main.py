@@ -19,7 +19,13 @@ async def startup() -> None:
 
 
 def main() -> None:
-    uvicorn.run(app=app, host="127.0.0.1", port=8000)
+    uvicorn.run(
+        app=app,
+        host="127.0.0.1",
+        port=8000,
+        # ssl_certfile=settings.SSLContext.SSL_CERTIFICATE,
+        # ssl_keyfile=settings.SSLContext.SSL_KEY
+    )
 
 
 if __name__ == "__main__":
