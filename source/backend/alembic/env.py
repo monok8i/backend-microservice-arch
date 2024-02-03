@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from app.models import Base
 
 # env path
-__env_path__ = "source/.env"
+__env_path__ = ".env"
 env = environs.Env()
 env.read_env(__env_path__)
 
