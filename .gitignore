@@ -297,4 +297,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+#poetry
+
 poetry.lock
