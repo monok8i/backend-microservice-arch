@@ -4,8 +4,8 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis.asyncio import ConnectionPool, Redis
 
-from source.backend.app.api import api_router
-from source.backend.app.core import settings
+from app.api import api_router
+from app.core import settings
 
 app = FastAPI(title="FastAPI backend", openapi_url=f"{settings.API_V1}/openapi.json")
 app.include_router(api_router, prefix=settings.API_V1)
@@ -16,15 +16,20 @@ async def startup() -> None:
     pool = ConnectionPool.from_url(url=settings.Redis.REDIS_URI)
     redis = Redis(connection_pool=pool)
     FastAPICache.init(RedisBackend(redis=redis), prefix="redis_cache")
+    
+    from app.models import Base
+    from app.infrastructure.postgres.setup import async_engine
+    
+    async with async_engine().begin() as session:
+        await session.run_sync(Base.metadata.create_all)
+
 
 
 def main() -> None:
     uvicorn.run(
         app=app,
-        host="127.0.0.1",
-        port=8000,
-        # ssl_certfile=settings.SSLContext.SSL_CERTIFICATE,
-        # ssl_keyfile=settings.SSLContext.SSL_KEY
+        host="0.0.0.0",
+        port=80,
     )
 
 

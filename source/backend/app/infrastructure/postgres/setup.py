@@ -3,7 +3,8 @@ from sqlalchemy.ext.asyncio import (
     AsyncEngine,
 )
 
-from source.backend.app.core import settings
+from ...core import settings
+from ...models import Base
 
 
 def async_engine() -> AsyncEngine:

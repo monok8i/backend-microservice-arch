@@ -7,7 +7,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from source.backend.app.models import Base
+from app.models import Base
 
 # env path
 __env_path__ = "source/.env"
@@ -37,13 +37,13 @@ target_metadata = Base.metadata
 
 
 def dsn() -> str:
-    user = env.str("DB_USER")
-    password = env.str("DB_PASSWORD")
-    server = env.str("DB_HOST")
-    port = env.int("DB_PORT")
-    db = env.str("DATABASE")
+    user = env.str("POSTGRES_USER")
+    password = env.str("POSTGRES_PASSWORD")
+    host = env.str("POSTGRES_HOST")
+    port = env.int("POSTGRES_PORT")
+    db = env.str("POSTGRES_DB")
 
-    return f"postgresql+asyncpg://{user}:{password}@{server}:{port}/{db}"
+    return f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{db}"
 
 
 def run_migrations_offline() -> None:

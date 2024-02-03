@@ -6,10 +6,10 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
-from source.backend.app.core import settings, security
-from source.backend.app.infrastructure.postgres.setup import async_engine
-from source.backend.app.models import User
-from source.backend.app.schemas import TokenPayload
+from ..core import settings, security
+from ..infrastructure.postgres.setup import async_engine
+from ..models import User
+from ..schemas import TokenPayload
 
 
 async def async_session() -> AsyncGenerator:
@@ -18,7 +18,7 @@ async def async_session() -> AsyncGenerator:
         yield session
 
 
-reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1}/login/")
+reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1}/auth/login")
 
 
 DbSession = Annotated[AsyncSession, Depends(async_session)]
@@ -35,7 +35,9 @@ async def get_current_user(db_session: DbSession, token: TokenDep) -> User:
         )
     user = await db_session.scalar(select(User).filter(User.user_id == token.sub))
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
 
     return user
 

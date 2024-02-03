@@ -49,8 +49,3 @@ def verify_password(*, user_password: str, hashed_password: str) -> bool:
 def generate_hashed_password(*, password: str, sub_string: str = None) -> str:
     return hash_context.hash(password)  # + sub_string)
 
-
-def generate_sub_hash_string(length: int = 4) -> str:
-    characters = string.ascii_letters + string.digits + string.punctuation
-
-    return "".join(secrets.choice(characters) for _ in range(length))

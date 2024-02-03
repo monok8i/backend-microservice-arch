@@ -1,17 +1,18 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from source.backend.app import crud, schemas
-from source.backend.app.api import deps
-from source.backend.app.core import security
+from ... import crud, schemas
+from ...api import deps
+from ...core import security
 
 router = APIRouter()
 
 
-@router.post("/", response_model=schemas.Token)
+@router.post("/login", response_model=schemas.Token)
 async def login(
     db_session: AsyncSession = Depends(deps.async_session),
     *,
@@ -34,3 +35,4 @@ async def login(
     return schemas.Token(
         access_token=security.encode_jwt_token(user.user_id), token_type="Bearer"
     )
+
