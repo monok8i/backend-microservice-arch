@@ -28,7 +28,7 @@ class Settings(BaseSettings):
         @classmethod
         def assemble_db_connection(
             cls, v: Optional[str], info: FieldValidationInfo
-        ) -> Any:
+        ) -> str:
             if isinstance(v, str):
                 return v
             return str(
@@ -109,5 +109,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-
-print(settings.RabbitMQ.AMQP_URI)

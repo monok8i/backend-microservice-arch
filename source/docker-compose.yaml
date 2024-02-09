@@ -33,7 +33,7 @@ services:
     expose:
       - "${POSTGRES_PORT}"
     volumes:
-      - source/scripts:/docker-entrypoint-initdb.d
+      - /mnt/r/Work/projects/python/fastapi/source/scripts:/docker-entrypoint-initdb.d
     networks:
       - backend
 

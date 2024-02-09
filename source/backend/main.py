@@ -16,13 +16,6 @@ async def startup() -> None:
     pool = ConnectionPool.from_url(url=settings.Redis.REDIS_URI)
     redis = Redis(connection_pool=pool)
     FastAPICache.init(RedisBackend(redis=redis), prefix="redis_cache")
-    
-    from app.models import Base
-    from app.infrastructure.postgres.setup import async_engine
-    
-    async with async_engine().begin() as session:
-        await session.run_sync(Base.metadata.create_all)
-
 
 
 def main() -> None:
