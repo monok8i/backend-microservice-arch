@@ -2,12 +2,10 @@ from typing import List, Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_cache.decorator import cache
-
-from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ... import crud, schemas
 from ..deps import async_session, CurrentUser
+from ... import crud, schemas
 
 router = APIRouter()
 
@@ -46,4 +44,3 @@ async def create_user(
     user = await crud.user.create(db_session, user_schema=user_schema)
 
     return user
-    

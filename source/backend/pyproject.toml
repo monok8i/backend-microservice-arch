@@ -4,20 +4,20 @@ version = "0.1.0"
 description = "First backend with using FastAPI framework"
 authors = ["monok8i <didkivskiyyura725@gmail.com>"]
 readme = "README.md"
-packages = [{include = "fastapi_service"}]
+packages = [{ include = "fastapi_service" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
 fastapi = "^0.104.1"
 pydantic = "^2.5.2"
-SQLAlchemy = {extras = ["asyncio"], version = "^2.0.23"}
-fastapi-users = {extras = ["sqlalchemy"], version = "^12.1.2"}
-uvicorn = {extras = ["all"], version = "^0.24.0.post1"}
+SQLAlchemy = { extras = ["asyncio"], version = "^2.0.23" }
+fastapi-users = { extras = ["sqlalchemy"], version = "^12.1.2" }
+uvicorn = { extras = ["all"], version = "^0.24.0.post1" }
 pydantic-settings = "^2.1.0"
 environs = "^9.5.0"
 alembic = "^1.12.1"
 asyncpg = "^0.29.0"
-pyjwt = {extras = ["crypto"], version = "^2.8.0"}
+pyjwt = { extras = ["crypto"], version = "^2.8.0" }
 redis = "^5.0.1"
 fastapi-cache2 = "^0.2.1"
 celery = "^5.3.6"
