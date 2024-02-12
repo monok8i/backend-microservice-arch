@@ -11,7 +11,6 @@ python = "^3.11"
 fastapi = "^0.104.1"
 pydantic = "^2.5.2"
 SQLAlchemy = { extras = ["asyncio"], version = "^2.0.23" }
-fastapi-users = { extras = ["sqlalchemy"], version = "^12.1.2" }
 uvicorn = { extras = ["all"], version = "^0.24.0.post1" }
 pydantic-settings = "^2.1.0"
 environs = "^9.5.0"
