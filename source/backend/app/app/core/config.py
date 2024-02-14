@@ -6,7 +6,7 @@ from pydantic import PostgresDsn, RedisDsn, AmqpDsn, field_validator
 from pydantic_core.core_schema import FieldValidationInfo
 from pydantic_settings import BaseSettings
 
-__env_path__ = "source/backend/.env"
+__env_path__ = ".env"
 env = environs.Env()
 env.read_env(__env_path__)
 
@@ -42,8 +42,8 @@ class Settings(BaseSettings):
     @property
     class Authentication(BaseSettings):
         ACCESS_TOKEN_EXPIRE_MINUTES: Optional[int] = 2
-        # JWT_PRIVATE_KEY: Path = env.path("JWT_PRIVATE_PATH")
-        # JWT_PUBLIC_KEY: Path = env.path("JWT_PUBLIC_PATH")
+        JWT_PRIVATE_KEY: Path = env.path("JWT_PRIVATE_PATH")
+        JWT_PUBLIC_KEY: Path = env.path("JWT_PUBLIC_PATH")
         ALGORITHM: str = "RS256"
 
     @property
@@ -106,4 +106,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-print(settings.Database.SQLALCHEMY_DATABASE_URI)
