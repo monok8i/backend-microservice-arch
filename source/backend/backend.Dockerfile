@@ -22,11 +22,11 @@ RUN adduser \
 
 RUN python -m pip install poetry
 
-WORKDIR /src/
+WORKDIR /backend-app/
 
 COPY . .
 
-WORKDIR /src/backend/
+WORKDIR /backend-app/app/
 
 #Installing project dependencies
 RUN poetry config virtualenvs.create false \
@@ -36,6 +36,6 @@ RUN poetry config virtualenvs.create false \
 
 EXPOSE 80
 
-RUN chmod +x ../scripts/* 
+RUN chmod +x ./scripts/* 
 
-ENTRYPOINT ../scripts/docker-entrypoint.sh
+ENTRYPOINT ./scripts/docker-entrypoint-backend.sh

@@ -31,6 +31,9 @@
 **/secrets.dev.yaml
 **/values.dev.yaml
 **/.idea
+**/__pycache__
+**/.vscode
+**/.ruff_cache
 
 LICENSE
 README.md
