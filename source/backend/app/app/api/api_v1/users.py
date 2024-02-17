@@ -1,4 +1,5 @@
-from typing import List, Any
+from uuid import UUID
+from typing import List, Any, Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_cache.decorator import cache
@@ -33,7 +34,8 @@ async def read_users(
 async def create_user(
     db_session: AsyncSession = Depends(async_session),
     *,
-    user_schema: schemas.UserCreate,
+    user_schema: Annotated[schemas.UserCreate, Depends()],
+    referral_schema: Annotated[schemas.ReferralCreate, Depends()]
 ) -> Any:
     user = await crud.user.get_by_email(db_session, email=user_schema.email)
     if user:
@@ -41,6 +43,34 @@ async def create_user(
             status_code=400,
             detail="The user with this email already exists in the system.",
         )
-    user = await crud.user.create(db_session, user_schema=user_schema)
+    if code := referral_schema.referral_code:
+        if not isinstance(code, UUID):
+            return HTTPException(
+                status_code=400, 
+                detail="Invalid referral code. Please check your code and try again"
+            )
+            
+        if user := await crud.user.get_by_referral_code(db_session, referral_code=code):
+            new_user = await crud.user.create(db_session, user_schema=user_schema)
+            referral = await crud.referral.create(
+                db_session, 
+                user_id=new_user.user_id, 
+                invited_by=user.user_id
+            )
+            return new_user
+        
+    new_user = await crud.user.create(db_session, user_schema=user_schema)
 
-    return user
+    return new_user
+
+
+@router.get("/my-referrals", response_model=List[schemas.Referral])
+async def get_my_referrals(
+    db_session: AsyncSession = Depends(async_session),
+    *,
+    current_user: CurrentUser,
+) -> Any:
+    referrals = await crud.referral.get_multi_by_id(db_session, invited_by=current_user.user_id)
+    
+    return referrals
+    

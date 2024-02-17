@@ -23,3 +23,5 @@ class UserUpdate(UserBase):
 class User(UserBase):
     user_id: Optional[int] = None
     referral_code: Optional[UUID] = None
+
+

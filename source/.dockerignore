@@ -24,6 +24,8 @@
 **/docker-compose*
 **/compose*
 **/Dockerfile*
+**/*.Dockerfile
+**/*.dockerfile
 **/node_modules
 **/npm-debug.log
 **/obj
