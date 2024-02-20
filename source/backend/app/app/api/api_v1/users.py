@@ -51,7 +51,7 @@ async def create_user(
             )
             
         if user := await crud.user.get_by_referral_code(db_session, referral_code=code):
-            new_user = await crud.user.create(db_session, user_schema=user_schema)
+            new_user = await crud.user.create(db_session, user_schema=user_schema, referral=True)
             referral = await crud.referral.create(
                 db_session, 
                 user_id=new_user.user_id, 

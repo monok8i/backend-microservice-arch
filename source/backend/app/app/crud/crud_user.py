@@ -3,7 +3,7 @@ import uuid
 from typing import Optional, List
 
 from pydantic import EmailStr
-from sqlalchemy import ScalarResult, select, join
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .base import CRUDBase
@@ -30,7 +30,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         return await db_session.scalar(select(User).filter(User.referral_code == referral_code))
 
     async def create(
-        self, db_session: AsyncSession, *, user_schema: UserCreate
+        self, db_session: AsyncSession, *, user_schema: UserCreate, referral: bool = False
     ) -> User:
         new_user = User(
             hashed_password=security.generate_hashed_password(
@@ -40,6 +40,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             is_active=user_schema.is_active,
             is_superuser=user_schema.is_superuser,
             is_activated=user_schema.is_activated,
+            referral_code=uuid.uuid4() if not referral else None
         )
         db_session.add(new_user)
         await db_session.commit()
@@ -80,7 +81,7 @@ class CRUDReferral(CRUDBase[Referral, UserCreate, UserUpdate]):
 
     async def get_multi_by_id(
         self, db_session: AsyncSession, *, invited_by: int,
-    ) -> List[User]:
+    ) -> List[Optional[User]]:
         referrals = await db_session.scalars(
             select(User)
             .join(Referral, User.user_id == Referral.user_id)
