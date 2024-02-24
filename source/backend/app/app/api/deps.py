@@ -18,7 +18,7 @@ async def async_session() -> AsyncGenerator:
         yield session
 
 
-reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1}/auth/login")
+reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"{settings.root_path}{settings.API_V1}/auth/login")
 
 
 DbSession = Annotated[AsyncSession, Depends(async_session)]

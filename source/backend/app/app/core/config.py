@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Any, Dict
+from typing import Optional, Any
 
 import environs
 from pydantic import PostgresDsn, RedisDsn, AmqpDsn, field_validator
@@ -13,6 +13,8 @@ env.read_env(__env_path__)
 
 class Settings(BaseSettings):
     API_V1: str = "/api/v1"
+    root_path: str = "/admin"
+    allowed_hosts: list[str] = ["*"]
 
     @property
     class Database(BaseSettings):

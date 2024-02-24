@@ -34,7 +34,7 @@ RUN poetry config virtualenvs.create false \
 
 #USER swift
 
-EXPOSE 80
+EXPOSE 5000
 
 RUN chmod +x ./scripts/* 
 
