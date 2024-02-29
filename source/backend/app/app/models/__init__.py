@@ -3,4 +3,4 @@ from .referral import Referral, Base
 
 base = Base
 
-__all__ = ["Base", "User"]
+__all__ = ["Base", "User", "Referral"]

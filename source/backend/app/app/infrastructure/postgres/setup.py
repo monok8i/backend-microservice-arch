@@ -3,11 +3,11 @@ from sqlalchemy.ext.asyncio import (
     AsyncEngine,
 )
 
-from ...core import settings
+from ...core.settings import settings
 
 
 def async_engine() -> AsyncEngine:
     engine = create_async_engine(
-        url=settings.Database.SQLALCHEMY_DATABASE_URI, echo=True
+        url=settings.Database().SQLALCHEMY_DATABASE_URI, echo=True
     )
     return engine

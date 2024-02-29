@@ -4,15 +4,15 @@ from typing import Union, Any
 import jwt
 from passlib.context import CryptContext
 
-from .config import settings
+from .settings import settings
 
 hash_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def encode_jwt_token(
     subject: Union[str, Any],
-    private_key: str = settings.Authentication.JWT_PRIVATE_KEY.read_text(),
-    algorithm: str = settings.Authentication.ALGORITHM,
+    private_key: str = settings.Authentication().JWT_PRIVATE_PATH.read_text(),
+    algorithm: str = settings.Authentication().ALGORITHM,
     *,
     expires: timedelta | None = None,
 ) -> str:
@@ -20,7 +20,7 @@ def encode_jwt_token(
         expire = datetime.utcnow() + expires
     else:
         expire = datetime.utcnow() + timedelta(
-            minutes=settings.Authentication.ACCESS_TOKEN_EXPIRE_MINUTES
+            minutes=settings.Authentication().ACCESS_TOKEN_EXPIRE_MINUTES
         )
 
     payload = {
@@ -34,8 +34,8 @@ def encode_jwt_token(
 
 def decode_jwt_token(
     token: str,
-    public_key: str = settings.Authentication.JWT_PUBLIC_KEY.read_text(),
-    algorithm: str = settings.Authentication.ALGORITHM,
+    public_key: str = settings.Authentication().JWT_PUBLIC_PATH.read_text(),
+    algorithm: str = settings.Authentication().ALGORITHM,
 ) -> Any:
     return jwt.decode(token, public_key, algorithms=[algorithm])
 

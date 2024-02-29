@@ -1,7 +1,7 @@
 from typing import Any, Generic, Optional, Type, TypeVar
 
 from pydantic import BaseModel
-from sqlalchemy import select, ScalarResult
+from sqlalchemy import select, ScalarResult, inspect
 from sqlalchemy.ext.asyncio import AsyncSession
 
 ModelType = TypeVar("ModelType", bound=Any)
@@ -13,10 +13,10 @@ class CRUDBase(Generic[ModelType, CreateSchema, UpdateSchema]):
     def __init__(self, model: Type[ModelType]):
         self.model = model
 
-    async def get(self, db_session: AsyncSession, user_id: int) -> Optional[ModelType]:
+    async def get(self, db_session: AsyncSession, *, obj_id: int) -> Optional[ModelType]:
         try:
             return await db_session.scalar(
-                select(self.model).where(self.model.user_id == user_id)
+                select(self.model).where(self.model.user_id == obj_id)
             )
         except Exception as ex:
             raise ex
@@ -34,5 +34,6 @@ class CRUDBase(Generic[ModelType, CreateSchema, UpdateSchema]):
     async def update(self) -> ModelType:
         ...  # update user
 
-    async def delete(self, db_session: AsyncSession) -> ModelType:
-        ...  # delete user
+    async def delete(self, db_session: AsyncSession, *, obj_id: int) -> ModelType:
+        ...
+

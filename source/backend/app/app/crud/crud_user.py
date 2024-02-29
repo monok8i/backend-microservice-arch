@@ -1,9 +1,9 @@
 import uuid
 
-from typing import Optional, List
+from typing import Optional, List, Union
 
 from pydantic import EmailStr
-from sqlalchemy import select
+from sqlalchemy import select, ScalarResult
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .base import CRUDBase
@@ -13,6 +13,7 @@ from ..schemas.user import UserCreate, UserUpdate
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
+
     async def get_by_email(
         self,
         db_session: AsyncSession,
@@ -20,7 +21,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         email: EmailStr,
     ) -> User:
         return await db_session.scalar(select(User).filter(User.email == email))
-       
+
     async def get_by_referral_code(
         self, 
         db_session: AsyncSession,
@@ -49,7 +50,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 
     async def authenticate(
         self, db_session: AsyncSession, *, email: EmailStr, password: str
-    ) -> User:
+    ) -> Union[User, None]:
         user = await self.get_by_email(db_session, email=email)
 
         if not user:
@@ -67,9 +68,10 @@ user = CRUDUser(User)
 
 
 class CRUDReferral(CRUDBase[Referral, UserCreate, UserUpdate]):
+
     async def create(
         self, db_session: AsyncSession, *, user_id: int, invited_by: int
-    ) -> User:
+    ) -> Referral:
         new_referral = Referral(
             user_id=user_id,
             invited_by=invited_by
@@ -81,7 +83,7 @@ class CRUDReferral(CRUDBase[Referral, UserCreate, UserUpdate]):
 
     async def get_multi_by_id(
         self, db_session: AsyncSession, *, invited_by: int,
-    ) -> List[Optional[User]]:
+    ) -> ScalarResult[User]:
         referrals = await db_session.scalars(
             select(User)
             .join(Referral, User.user_id == Referral.user_id)
@@ -89,5 +91,6 @@ class CRUDReferral(CRUDBase[Referral, UserCreate, UserUpdate]):
         )
         
         return referrals
-        
+
+
 referral = CRUDReferral(Referral)

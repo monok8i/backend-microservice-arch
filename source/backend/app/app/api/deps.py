@@ -6,7 +6,8 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
-from ..core import settings, security
+from ..core import security
+from ..core.settings import settings
 from ..infrastructure.postgres.setup import async_engine
 from ..models import User
 from ..schemas import TokenPayload
@@ -18,7 +19,7 @@ async def async_session() -> AsyncGenerator:
         yield session
 
 
-reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"{settings.root_path}{settings.API_V1}/auth/login")
+reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1}/auth/login")
 
 
 DbSession = Annotated[AsyncSession, Depends(async_session)]
