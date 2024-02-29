@@ -13,7 +13,9 @@ class CRUDBase(Generic[ModelType, CreateSchema, UpdateSchema]):
     def __init__(self, model: Type[ModelType]):
         self.model = model
 
-    async def get(self, db_session: AsyncSession, *, obj_id: int) -> Optional[ModelType]:
+    async def get(
+        self, db_session: AsyncSession, *, obj_id: int
+    ) -> Optional[ModelType]:
         try:
             return await db_session.scalar(
                 select(self.model).where(self.model.user_id == obj_id)
@@ -36,4 +38,3 @@ class CRUDBase(Generic[ModelType, CreateSchema, UpdateSchema]):
 
     async def delete(self, db_session: AsyncSession, *, obj_id: int) -> ModelType:
         ...
-

@@ -15,4 +15,3 @@ class ReferralCreate(BaseModel):
 
 class Referral(User):
     pass
-    

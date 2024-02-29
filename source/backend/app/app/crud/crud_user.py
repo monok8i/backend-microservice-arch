@@ -13,7 +13,6 @@ from ..schemas.user import UserCreate, UserUpdate
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
-
     async def get_by_email(
         self,
         db_session: AsyncSession,
@@ -23,15 +22,21 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         return await db_session.scalar(select(User).filter(User.email == email))
 
     async def get_by_referral_code(
-        self, 
+        self,
         db_session: AsyncSession,
         *,
         referral_code: uuid.UUID,
     ) -> User:
-        return await db_session.scalar(select(User).filter(User.referral_code == referral_code))
+        return await db_session.scalar(
+            select(User).filter(User.referral_code == referral_code)
+        )
 
     async def create(
-        self, db_session: AsyncSession, *, user_schema: UserCreate, referral: bool = False
+        self,
+        db_session: AsyncSession,
+        *,
+        user_schema: UserCreate,
+        referral: bool = False,
     ) -> User:
         new_user = User(
             hashed_password=security.generate_hashed_password(
@@ -41,7 +46,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             is_active=user_schema.is_active,
             is_superuser=user_schema.is_superuser,
             is_activated=user_schema.is_activated,
-            referral_code=uuid.uuid4() if not referral else None
+            referral_code=uuid.uuid4() if not referral else None,
         )
         db_session.add(new_user)
         await db_session.commit()
@@ -68,28 +73,27 @@ user = CRUDUser(User)
 
 
 class CRUDReferral(CRUDBase[Referral, UserCreate, UserUpdate]):
-
     async def create(
         self, db_session: AsyncSession, *, user_id: int, invited_by: int
     ) -> Referral:
-        new_referral = Referral(
-            user_id=user_id,
-            invited_by=invited_by
-        )
+        new_referral = Referral(user_id=user_id, invited_by=invited_by)
         db_session.add(new_referral)
         await db_session.commit()
 
         return new_referral
 
     async def get_multi_by_id(
-        self, db_session: AsyncSession, *, invited_by: int,
+        self,
+        db_session: AsyncSession,
+        *,
+        invited_by: int,
     ) -> ScalarResult[User]:
         referrals = await db_session.scalars(
             select(User)
             .join(Referral, User.user_id == Referral.user_id)
             .where(Referral.invited_by == invited_by)
         )
-        
+
         return referrals
 
 

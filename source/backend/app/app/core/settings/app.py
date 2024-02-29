@@ -11,7 +11,7 @@ from redis.asyncio import Redis, ConnectionPool
 
 
 class ServiceSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_file='source/backend/.env', extra="ignore")
+    model_config = SettingsConfigDict(env_file="source/backend/.env", extra="ignore")
 
 
 class Settings(BaseSettings):
@@ -51,7 +51,9 @@ class Settings(BaseSettings):
         SQLALCHEMY_DATABASE_URI: Optional[str] = None
 
         @field_validator("SQLALCHEMY_DATABASE_URI", mode="before")
-        def assemble_db_connection(cls, v: Optional[str], info: FieldValidationInfo) -> Any:
+        def assemble_db_connection(
+            cls, v: Optional[str], info: FieldValidationInfo
+        ) -> Any:
             if isinstance(v, str):
                 return v
             return str(
@@ -80,7 +82,9 @@ class Settings(BaseSettings):
         REDIS_URI: Optional[str] = None
 
         @field_validator("REDIS_URI", mode="before")
-        def assemble_db_connection(cls, v: Optional[str], info: FieldValidationInfo) -> Any:
+        def assemble_db_connection(
+            cls, v: Optional[str], info: FieldValidationInfo
+        ) -> Any:
             if isinstance(v, str):
                 return v
             return str(
@@ -106,7 +110,9 @@ class Settings(BaseSettings):
         AMQP_URI: Optional[str] = None
 
         @field_validator("AMQP_URI", mode="before")
-        def assemble_db_connection(cls, v: Optional[str], info: FieldValidationInfo) -> Any:
+        def assemble_db_connection(
+            cls, v: Optional[str], info: FieldValidationInfo
+        ) -> Any:
             if isinstance(v, str):
                 return v
             return str(
