@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastapi-fullstack"
-version = "0.1.0"
+version = "0.3.0b"
 description = "First backend with using FastAPI framework"
 authors = ["monok8i <didkivskiyyura725@gmail.com>"]
 readme = "README.md"

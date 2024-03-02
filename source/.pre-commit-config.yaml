@@ -1,13 +1,6 @@
 repos:
   - repo: local
     hooks:
-      - id: black
-        name: black
-        entry: black --config source/backend/app/pyproject.toml .
-        language: system
-        types: [ python3 ]
-        pass_filenames: false
-
       - id: ruff
         name: ruff
         entry: ruff format --config source/backend/app/pyproject.toml .
@@ -21,3 +14,9 @@ repos:
         language: system
         types: [ python3 ]
         pass_filenames: false
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.6.4
+    hooks:
+      - id: isort
+        args: [ "--profile", "black", "--filter-files" ]
