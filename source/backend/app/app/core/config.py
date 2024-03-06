@@ -1,10 +1,9 @@
-from .settings import settings as config
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from ..api import api_router
 from .events import lifespan
+from .settings import settings as config
+from ..api import api_router
 
 
 def get_apiv1_app() -> FastAPI:

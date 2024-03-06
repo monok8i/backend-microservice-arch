@@ -16,6 +16,14 @@ def encode_jwt_token(
     *,
     expires: timedelta | None = None,
 ) -> str:
+    """
+    `encode_jwt_token` encodes payload data in JWT token using private_key
+    :param subject: Data that which must be in the token
+    :param private_key: JWT private-key for encoding
+    :param algorithm: Specific algorithm for encoding
+    :param expires: Timedelta, after which the token will not be valid
+    :return: Encoded JWT token
+    """
     if expires:
         expire = datetime.utcnow() + expires
     else:
@@ -37,12 +45,30 @@ def decode_jwt_token(
     public_key: str = settings.Authentication().JWT_PUBLIC_PATH.read_text(),
     algorithm: str = settings.Authentication().ALGORITHM,
 ) -> Any:
+    """
+    `decode_jwt_token` decodes JWT token using public_key to your data
+    :param token: JWT-token
+    :param public_key: JWT public-key for decoding
+    :param algorithm: Specific algorithm for decoding
+    :return: Decode JWT token
+    """
     return jwt.decode(token, public_key, algorithms=[algorithm])
 
 
 def verify_password(*, user_password: str, hashed_password: str) -> bool:
+    """
+    `verify_password` function checks whether the received cache is the specified term
+    :param user_password: password original string
+    :param hashed_password: hashed password
+    :return: ``True`` if the hashed term is the specified user term, else ``None``
+    """
     return hash_context.verify(user_password, hashed_password)
 
 
-def generate_hashed_password(*, password: str, sub_string: str = None) -> str:
-    return hash_context.hash(password)  # + sub_string)
+def generate_hashed_password(*, password: str) -> str:
+    """
+    `generate_hashed_password` function generates a hash based on the password string
+    :param password: Password string which must be hashed
+    :return: A hashed string
+    """
+    return hash_context.hash(password)

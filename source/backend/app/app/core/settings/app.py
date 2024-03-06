@@ -1,12 +1,11 @@
 from pathlib import Path
 from typing import Optional, Any, Dict
 
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
 from pydantic import PostgresDsn, RedisDsn, AmqpDsn, field_validator
 from pydantic_core.core_schema import FieldValidationInfo
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-from fastapi_cache import FastAPICache
-from fastapi_cache.backends.redis import RedisBackend
 from redis.asyncio import Redis, ConnectionPool
 
 
@@ -127,5 +126,3 @@ class Settings(BaseSettings):
 
 
 settings: Settings = Settings()
-
-print(settings.Database().SQLALCHEMY_DATABASE_URI)

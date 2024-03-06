@@ -5,10 +5,7 @@ from .base import Base
 
 
 class Referral(Base):
-    id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("users.user_id"), nullable=False
-    )
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, nullable=False)
     invited_by: Mapped[int] = mapped_column(
-        Integer, ForeignKey("users.user_id"), nullable=False
+        Integer, ForeignKey("users.id"), nullable=False
     )

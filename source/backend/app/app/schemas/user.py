@@ -17,9 +17,14 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(UserBase):
+    email: Optional[EmailStr] = None
     password: Optional[str] = None
 
 
+class UserUpdateViaKey(BaseModel):
+    key: Optional[str]
+
+
 class User(UserBase):
-    user_id: Optional[int] = None
+    id: Optional[int] = None
     referral_code: Optional[UUID] = None

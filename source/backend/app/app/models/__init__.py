@@ -1,5 +1,5 @@
-from .users import User, Base
 from .referral import Referral, Base
+from .users import User, Base
 
 base = Base
 
