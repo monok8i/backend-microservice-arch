@@ -13,14 +13,13 @@ router = APIRouter()
 
 @router.post("/login", response_model=Token)
 async def login(
-    db_session: DatabaseSession,
-    *,
-    auth_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+        db_session: DatabaseSession,
+        *,
+        auth_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> Token:
     user = await crud.user.authenticate(
         db_session, email=auth_data.username, password=auth_data.password
     )
-
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
