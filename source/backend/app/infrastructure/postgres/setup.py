@@ -1,0 +1,53 @@
+from typing import Annotated, AsyncGenerator
+
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+
+from ...core.settings import config
+
+
+def async_engine() -> AsyncEngine:
+    """
+    Create an async database engine.
+
+    Returns:
+        An async database engine.
+    """
+    engine = create_async_engine(
+        url=config.Database().SQLALCHEMY_DATABASE_URI, echo=True
+    )
+    return engine
+
+
+def async_callable_session() -> async_sessionmaker:
+    """
+    Create an async callable database session.
+
+    Returns:
+        An async context manager that provides an async database session.
+    """
+    return async_sessionmaker(bind=async_engine(), expire_on_commit=False)
+
+
+async def async_session() -> AsyncGenerator:
+    """
+    Create an async database session.
+
+    Returns:
+        An async context manager that provides an async database session.
+    """
+    session = async_sessionmaker(bind=async_engine(), expire_on_commit=False)
+    async with session() as session:
+        yield session
+
+
+AsyncDatabaseCallableSession = Annotated[
+    async_sessionmaker[AsyncSession], Depends(async_callable_session)
+]
+
+AsyncDatabaseGenerator = Annotated[AsyncSession, Depends(async_session)]
