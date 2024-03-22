@@ -3,7 +3,7 @@ from typing import Optional, Any, Dict
 
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
-from pydantic import PostgresDsn, RedisDsn, AmqpDsn, field_validator
+from pydantic import PostgresDsn, RedisDsn, field_validator
 from pydantic_core.core_schema import FieldValidationInfo
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from redis.asyncio import Redis, ConnectionPool
@@ -68,6 +68,7 @@ class Settings(BaseSettings):
 
     class Authentication(ServiceSettings):
         ACCESS_TOKEN_EXPIRE_MINUTES: Optional[int] = 1
+        REFRESH_TOKEN_EXPIRE_DAYS: Optional[int] = 30
         JWT_PRIVATE_PATH: Path
         JWT_PUBLIC_PATH: Path
         ALGORITHM: str = "RS256"
@@ -98,31 +99,6 @@ class Settings(BaseSettings):
             pool = ConnectionPool.from_url(url=self.REDIS_URI)
             redis = Redis(connection_pool=pool)
             FastAPICache.init(RedisBackend(redis=redis), prefix="redis_cache")
-
-    class RabbitMQ(ServiceSettings):
-        AMQP_USER: str
-        AMQP_PASSWORD: str
-        AMQP_HOST: str
-        AMQP_PORT: int
-        AMQP_VHOST: str
-
-        AMQP_URI: Optional[str] = None
-
-        @field_validator("AMQP_URI", mode="before")
-        def assemble_db_connection(
-            cls, v: Optional[str], info: FieldValidationInfo
-        ) -> Any:
-            if isinstance(v, str):
-                return v
-            return str(
-                AmqpDsn.build(
-                    scheme="amqps",
-                    username=info.data.get("AMQP_USER"),
-                    password=info.data.get("AMQP_PASSWORD"),
-                    host=info.data.get("AMQP_HOST"),
-                    path=info.data.get("AMQP_VHOST"),
-                )
-            )
 
 
 config: Settings = Settings()

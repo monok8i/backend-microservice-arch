@@ -1,4 +1,4 @@
-from typing import Optional, Union, List
+from typing import Union, List
 
 from fastapi import APIRouter, HTTPException, status
 from fastapi_cache.decorator import cache
@@ -17,7 +17,7 @@ async def get_me(current_user: CurrentUser) -> models.User:
 
 @router.get("/{user_id}", response_model=schemas.User, status_code=status.HTTP_200_OK)
 async def get_user(
-    uow: UnitOfWorkContext, *, user_id: Optional[int] = None
+    uow: UnitOfWorkContext, *, user_id: int
 ) -> Union[models.User, HTTPException]:
     result = await UserService.get_by_id(uow, user_id=user_id)
 

@@ -1,1 +1,1 @@
-from .user import UserRepository, UserProfileRepository
+from .user import UserRepository, RefreshSessionRepository

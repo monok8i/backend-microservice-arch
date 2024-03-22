@@ -1,14 +1,6 @@
-from .token import Token, TokenPayload
+from .token import Token, TokenPayload, RefreshSessionCreate, RefreshSessionUpdate
 from .user import (
     User,
     UserCreate,
     UserUpdate,
-    UserProfile,
-    UserProfileCreate,
-    UserProfileUpdate,
 )
-
-# __all__ = [
-#     'User', 'UserCreate', 'UserUpdate', 'UserProfile', 'UserProfileCreate', 'UserProfileUpdate', 'Token',
-#     'TokenPayload',
-# ]

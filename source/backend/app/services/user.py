@@ -7,7 +7,7 @@ from pydantic import EmailStr
 from ..models import User
 from ..schemas import UserCreate, UserUpdate
 from ..utils import UnitOfWork
-from ..utils.exceptions import UserAlreadyExists, UserNotFound
+from ..utils.exceptions import UserAlreadyExistsException, UserNotFoundException
 from ..utils.security import generate_hashed_password
 from ..utils.specification import UserIDSpecification, UserEmailSpecification
 
@@ -24,7 +24,7 @@ class UserService:
             await uow.commit()
 
         if not user:
-            raise UserNotFound(spec=spec)
+            raise UserNotFoundException(spec=spec)
 
         return user
 
@@ -60,7 +60,7 @@ class UserService:
         uow: UnitOfWork,
         *,
         create_schema: UserCreate,
-    ) -> Union[User, UserAlreadyExists]:
+    ) -> Union[User, UserAlreadyExistsException]:
         user = await cls.get_by_email(uow, email=create_schema.email)
 
         if not user:
@@ -77,7 +77,7 @@ class UserService:
 
             return user
 
-        raise UserAlreadyExists
+        raise UserAlreadyExistsException
 
     @classmethod
     async def update(
@@ -98,7 +98,7 @@ class UserService:
                 await uow.commit()
 
             if not user:
-                raise UserNotFound(spec=spec)
+                raise UserNotFoundException(spec=spec)
 
             return user
 
@@ -107,7 +107,7 @@ class UserService:
             await uow.commit()
 
         if not user:
-            raise UserNotFound(spec=spec)
+            raise UserNotFoundException(spec=spec)
 
         return user
 
@@ -123,7 +123,7 @@ class UserService:
         async with uow:
             user = await uow.user.delete(spec=spec)
             if not user:
-                raise UserNotFound(spec=spec)
+                raise UserNotFoundException(spec=spec)
 
             await uow.commit()
 

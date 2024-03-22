@@ -1,22 +1,12 @@
 from abc import ABC, abstractmethod
 
+from ..models import User, RefreshSession
+
 
 class ISpecification(ABC):
     @abstractmethod
     def is_satisfied_by(self, user):
         raise NotImplementedError
-
-    @abstractmethod
-    def and_(self, other):
-        pass
-
-    @abstractmethod
-    def or_(self, other):
-        pass
-
-    @abstractmethod
-    def not_(self):
-        pass
 
 
 class UserIDSpecification(ISpecification):
@@ -26,28 +16,18 @@ class UserIDSpecification(ISpecification):
     def is_satisfied_by(self, user):
         return user.id == self._id
 
-    def and_(self, other):
-        pass
-
-    def or_(self, other):
-        pass
-
-    def not_(self):
-        pass
-
 
 class UserEmailSpecification(ISpecification):
     def __init__(self, email) -> None:
         self._email = email
 
-    def is_satisfied_by(self, user):
+    def is_satisfied_by(self, user: User):
         return user.email == self._email
 
-    def and_(self, other):
-        pass
 
-    def or_(self, other):
-        pass
+class RefreshTokenSpecification(ISpecification):
+    def __init__(self, refresh_token) -> None:
+        self._refresh_token = refresh_token
 
-    def not_(self):
-        pass
+    def is_satisfied_by(self, refresh_session: RefreshSession):
+        return refresh_session.refresh_token == self._refresh_token

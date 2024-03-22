@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
 from ..infrastructure import async_callable_session
-from ..models import User, UserProfile
-from ..repositories import UserRepository, UserProfileRepository
+from ..models import User, RefreshSession
+from ..repositories import UserRepository, RefreshSessionRepository
 
 
 class IUnitOfWork(ABC):
@@ -35,8 +35,8 @@ class UnitOfWork(IUnitOfWork):
         self._session = self._call_async_session()
 
         self.user = UserRepository(model=User, session=self._session)
-        self.user_profile = UserProfileRepository(
-            model=UserProfile, session=self._session
+        self.refresh_session = RefreshSessionRepository(
+            model=RefreshSession, session=self._session
         )
 
     async def __aexit__(self, exc_type, exc_value, traceback):

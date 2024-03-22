@@ -21,30 +21,6 @@ class UserUpdate(UserBase):
     password: Optional[str] = None
 
 
-class UserUpdateViaKey(BaseModel):
-    key: Optional[str]
-
-
 class User(UserBase):
     id: Optional[int] = None
     referral_code: Optional[UUID] = None
-
-
-class UserBaseProfile(BaseModel):
-    user_avatar_url: Optional[str] = None
-    user_bio: Optional[str] = None
-    user_location: Optional[str] = None
-    user_website: Optional[str] = None
-    user_github: Optional[str] = None
-
-
-class UserProfileCreate(UserBaseProfile):
-    user_id: int
-
-
-class UserProfileUpdate(UserBaseProfile):
-    pass
-
-
-class UserProfile(UserBaseProfile):
-    pass

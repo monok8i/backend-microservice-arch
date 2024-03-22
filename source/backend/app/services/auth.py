@@ -1,3 +1,4 @@
+import secrets
 from datetime import datetime, timedelta
 from typing import Union, Any
 
@@ -9,8 +10,15 @@ from pydantic import EmailStr
 from .user import UserService
 from ..core.settings import config
 from ..models import User
+from ..schemas import Token, RefreshSessionCreate
 from ..utils import UnitOfWork
+from ..utils.exceptions import (
+    InvalidCredentialsException,
+    InvalidTokenException,
+    TokenExpiredException,
+)
 from ..utils.security import verify_password
+from ..utils.specification import UserIDSpecification, RefreshTokenSpecification
 
 hash_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -65,10 +73,71 @@ class AuthenticationService:
         return jwt.decode(token, public_key, algorithms=[algorithm])
 
     @classmethod
+    def _generate_refresh_token(cls, lenght: int = 64):
+        return secrets.token_urlsafe(lenght)
+
+    @classmethod
+    async def create_token(cls, uow: UnitOfWork, user_id: int) -> Token:
+        access_token = cls.encode_jwt_token(user_id)
+        refresh_token = cls._generate_refresh_token()
+
+        async with uow:
+            await uow.refresh_session.create(
+                create_schema=RefreshSessionCreate(
+                    refresh_token=refresh_token,
+                    expires_in=timedelta(
+                        days=config.Authentication().REFRESH_TOKEN_EXPIRE_DAYS
+                    ).total_seconds(),
+                    user_id=user_id,
+                )
+            )
+
+            await uow.commit()
+
+        return Token(
+            access_token=access_token, refresh_token=refresh_token, token_type="bearer"
+        )
+
+    @classmethod
+    async def refresh_token(cls, uow: UnitOfWork, refresh_token: str) -> Token:
+        spec = RefreshTokenSpecification(refresh_token=refresh_token)
+
+        async with uow:
+            refresh_session = await uow.refresh_session.get(spec=spec)
+
+            if not refresh_session:
+                raise InvalidTokenException
+
+            if datetime.utcnow() > refresh_session.created_at + timedelta(
+                seconds=refresh_session.expires_in
+            ):
+                await uow.refresh_session.delete(spec=spec)
+                raise TokenExpiredException
+
+            user = await uow.user.get(
+                spec=UserIDSpecification(id=refresh_session.user_id)
+            )
+            if not user:
+                raise InvalidTokenException
+
+            await uow.commit()
+
+        access_token = cls.encode_jwt_token(user.id)
+
+        return Token(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            token_type="bearer",
+        )
+
+    @classmethod
     async def authenticate_user(
         cls, uow: UnitOfWork, *, email: EmailStr, password: str
     ) -> Union[User, HTTPException]:
         user = await UserService.get_by_email(uow, email=email)
+
+        if not user:
+            raise InvalidCredentialsException
 
         if not verify_password(
             user_password=password,
@@ -77,3 +146,15 @@ class AuthenticationService:
             raise
 
         return user
+
+    @classmethod
+    async def logout(cls, uow: UnitOfWork, refresh_token: str) -> None:
+        async with uow:
+            spec = RefreshTokenSpecification(refresh_token=refresh_token)
+            refresh_session = await uow.refresh_session.get(spec=spec)
+
+            if not refresh_session:
+                raise InvalidTokenException
+
+            await uow.refresh_session.delete(spec=spec)
+            await uow.commit()
