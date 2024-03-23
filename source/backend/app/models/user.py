@@ -11,6 +11,3 @@ class User(Base):
     is_superuser: Mapped[bool] = mapped_column(Boolean)
     is_activated: Mapped[bool] = mapped_column(Boolean)
     referral_code: Mapped[UUID] = mapped_column(UUID(as_uuid=True), nullable=True)
-
-
-

@@ -8,5 +8,7 @@ class UserRepository(Repository[User, UserCreate, UserUpdate]):
     model = User
 
 
-class RefreshSessionRepository(Repository[RefreshSession, RefreshSessionCreate, RefreshSessionUpdate]):
+class RefreshSessionRepository(
+    Repository[RefreshSession, RefreshSessionCreate, RefreshSessionUpdate]
+):
     model = RefreshSession

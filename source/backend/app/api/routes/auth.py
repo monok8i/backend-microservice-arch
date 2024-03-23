@@ -28,12 +28,6 @@ async def login(
     token = await AuthenticationService.create_token(uow, user.id)
 
     response.set_cookie(
-        "access_token",
-        token.access_token,
-        max_age=config.Authentication().ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        httponly=True,
-    )
-    response.set_cookie(
         "refresh_token",
         token.refresh_token,
         max_age=config.Authentication().REFRESH_TOKEN_EXPIRE_DAYS * 60 * 60 * 24,
@@ -58,12 +52,6 @@ async def login(
     )
 
     response.set_cookie(
-        "access_token",
-        refreshed_token.access_token,
-        max_age=config.Authentication().ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        httponly=True,
-    )
-    response.set_cookie(
         "refresh_token",
         refreshed_token.refresh_token,
         max_age=config.Authentication().REFRESH_TOKEN_EXPIRE_DAYS * 60 * 60 * 24,
@@ -81,7 +69,6 @@ async def logout(
 ) -> None:
     refresh_token = request.cookies.get("refresh_token")
 
-    response.delete_cookie("access_token", httponly=True)
     response.delete_cookie("refresh_token", httponly=True)
 
     await AuthenticationService.logout(uow, refresh_token=refresh_token)

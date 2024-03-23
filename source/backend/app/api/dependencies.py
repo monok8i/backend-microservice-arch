@@ -2,6 +2,7 @@ from typing import Annotated, Union
 
 import jwt
 from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 
 from ..core.settings import config
 from ..models import User
@@ -9,13 +10,12 @@ from ..schemas.token import TokenPayload
 from ..services import UserService, AuthenticationService
 from ..utils import UnitOfWork
 from ..utils.exceptions import InvalidTokenException
-from ..utils.security import OAuth2PasswordBearerWithCookie
 
 # unit of work context
 UnitOfWorkContext = Annotated[UnitOfWork, Depends(UnitOfWork)]
 
 # reusable URL for receiving auth token from user
-oauth2 = OAuth2PasswordBearerWithCookie(tokenUrl=f"{config.API_V1}/auth/login")
+oauth2 = OAuth2PasswordBearer(tokenUrl=f"{config.API_V1}/auth/login")
 
 # put auth token in variable using Annotated special form
 TokenDep = Annotated[str, Depends(oauth2)]
