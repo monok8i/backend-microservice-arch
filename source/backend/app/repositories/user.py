@@ -1,5 +1,5 @@
-from .repository import Repository
-from ..models import User, RefreshSession
+from .repository import Repository  # noqa: I001
+from ..models import RefreshSession, User
 from ..schemas.token import RefreshSessionCreate, RefreshSessionUpdate
 from ..schemas.user import UserCreate, UserUpdate
 

@@ -1,2 +1,2 @@
-from .session import RefreshSession, Base
-from .user import User, Base
+from .session import Base, RefreshSession
+from .user import Base, User

@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import List, Union
 
 from fastapi import APIRouter, HTTPException, status
 from fastapi_cache.decorator import cache
@@ -49,9 +49,9 @@ async def create_user(
 
 # complete renovation of the object
 @router.put("/{user_id}", response_model=schemas.User, status_code=status.HTTP_200_OK)
-async def update_user(
-    uow: UnitOfWorkContext, *, user_id: int, update_schema: schemas.UserCreate
-) -> Union[models.User, HTTPException]:
+async def put_user(
+    uow: UnitOfWorkContext, *, user_id: int, update_schema: schemas.UserUpdate
+) -> Union[models.User | HTTPException]:
     obj = await UserService.update(uow, user_id=user_id, update_schema=update_schema)
 
     return obj
@@ -59,12 +59,12 @@ async def update_user(
 
 # partial renovation of the object
 @router.patch("/{user_id}", response_model=schemas.User, status_code=status.HTTP_200_OK)
-async def update_user(
+async def patch_user(
     uow: UnitOfWorkContext,
     *,
     user_id: int,
     update_schema: schemas.UserUpdate,
-) -> Union[models.User, HTTPException]:
+) -> Union[models.User | HTTPException]:
     obj = await UserService.update(uow, user_id=user_id, update_schema=update_schema)
 
     return obj
@@ -78,7 +78,7 @@ async def delete_user(
     uow: UnitOfWorkContext,
     *,
     user_id: int,
-) -> Union[models.User, HTTPException]:
+) -> Union[models.User | HTTPException]:
     obj = await UserService.delete(uow, user_id=user_id)
 
     return obj

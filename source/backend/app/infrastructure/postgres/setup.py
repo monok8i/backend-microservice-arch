@@ -1,4 +1,4 @@
-from typing import Annotated, AsyncGenerator
+from typing import Annotated
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import (
@@ -18,10 +18,7 @@ def async_engine() -> AsyncEngine:
     Returns:
         An async database engine.
     """
-    engine = create_async_engine(
-        url=config.Database().SQLALCHEMY_DATABASE_URI, echo=True
-    )
-    return engine
+    return create_async_engine(url=config.Database().SQLALCHEMY_DATABASE_URI, echo=True)
 
 
 def async_callable_session() -> async_sessionmaker:
@@ -34,7 +31,7 @@ def async_callable_session() -> async_sessionmaker:
     return async_sessionmaker(bind=async_engine(), expire_on_commit=False)
 
 
-async def async_session() -> AsyncGenerator:
+async def async_session() -> AsyncSession:
     """
     Create an async database session.
 
@@ -47,7 +44,7 @@ async def async_session() -> AsyncGenerator:
 
 
 AsyncDatabaseCallableSession = Annotated[
-    async_sessionmaker[AsyncSession], Depends(async_callable_session)
+    async_sessionmaker, Depends(async_callable_session)
 ]
 
 AsyncDatabaseGenerator = Annotated[AsyncSession, Depends(async_session)]

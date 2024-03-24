@@ -1,4 +1,4 @@
-from typing import TypeVar, Optional
+from typing import Optional, TypeVar
 
 from fastapi import HTTPException, status
 
@@ -13,7 +13,7 @@ class UserNotFoundException(HTTPException):
 
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No User found"
+            detail="No User found"
             if not self._spec
             else f"No User found with your specification {self._spec.__class__.__name__}",
         )

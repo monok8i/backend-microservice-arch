@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
 from ..infrastructure import async_callable_session
-from ..models import User, RefreshSession
-from ..repositories import UserRepository, RefreshSessionRepository
+from ..models import RefreshSession, User
+from ..repositories import RefreshSessionRepository, UserRepository
 
 
 class IUnitOfWork(ABC):

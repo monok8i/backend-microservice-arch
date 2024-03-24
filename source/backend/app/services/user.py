@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional, Union, Any, List
+from typing import List
 
 from fastapi import HTTPException
 from pydantic import EmailStr
@@ -9,14 +9,28 @@ from ..schemas import UserCreate, UserUpdate
 from ..utils import UnitOfWork
 from ..utils.exceptions import UserAlreadyExistsException, UserNotFoundException
 from ..utils.security import generate_hashed_password
-from ..utils.specification import UserIDSpecification, UserEmailSpecification
+from ..utils.specification import UserEmailSpecification, UserIDSpecification
 
 
 class UserService:
+    """
+    A service class for managing user data.
+
+    This class provides methods for creating, reading, updating, and deleting users, as well as authenticating users.
+    """
+
     @classmethod
-    async def get_by_id(
-        cls, uow: UnitOfWork, *, user_id: int
-    ) -> Union[User, HTTPException]:
+    async def get_by_id(cls, uow: UnitOfWork, *, user_id: int) -> User or HTTPException:
+        """
+        Get a user by their ID.
+
+        Args:
+            uow (UnitOfWork): a dependency injection of the UnitOfWork class for managing database transactions
+            user_id (int): the ID of the user to retrieve
+
+        Returns:
+            User or HTTPException: the retrieved user or a HTTPException if the user does not exist
+        """
         spec = UserIDSpecification(id=user_id)
 
         async with uow:
@@ -32,6 +46,17 @@ class UserService:
     async def get_all(
         cls, uow: UnitOfWork, skip: int = 0, limit: int = 100
     ) -> List[User]:
+        """
+        Get a list of all users.
+
+        Args:
+            uow (UnitOfWork): a dependency injection of the UnitOfWork class for managing database transactions
+            skip (int, optional): the number of users to skip (default: 0)
+            limit (int, optional): the maximum number of users to return (default: 100)
+
+        Returns:
+            List[User]: a list of all users
+        """
         async with uow:
             users = await uow.user.get_multi(skip=skip, limit=limit)
 
@@ -45,7 +70,17 @@ class UserService:
         uow: UnitOfWork,
         *,
         email: EmailStr,
-    ) -> Any:
+    ) -> User:
+        """
+        Get a user by their email address.
+
+        Args:
+            uow (UnitOfWork): a dependency injection of the UnitOfWork class for managing database transactions
+            email (EmailStr): the email address of the user to retrieve
+
+        Returns:
+            User: the retrieved user
+        """
         spec = UserEmailSpecification(email)
 
         async with uow:
@@ -60,7 +95,17 @@ class UserService:
         uow: UnitOfWork,
         *,
         create_schema: UserCreate,
-    ) -> Union[User, UserAlreadyExistsException]:
+    ) -> User or HTTPException:
+        """
+        Create a new user.
+
+        Args:
+            uow (UnitOfWork): a dependency injection of the UnitOfWork class for managing database transactions
+            create_schema (UserCreate): the user data to create
+
+        Returns:
+            User or HTTPException: the created user or a HTTPException if the user already exists
+        """
         user = await cls.get_by_email(uow, email=create_schema.email)
 
         if not user:
@@ -82,7 +127,18 @@ class UserService:
     @classmethod
     async def update(
         cls, uow: UnitOfWork, *, user_id: int, update_schema: UserUpdate
-    ) -> Optional[User]:
+    ) -> User or HTTPException:
+        """
+        Update an existing user.
+
+        Args:
+            uow (UnitOfWork): a dependency injection of the UnitOfWork class for managing database transactions
+            user_id (int): the ID of the user to update
+            update_schema (UserUpdate): the updated user data
+
+        Returns:
+            User or HTTPException: the updated user or a HTTPException if the user does not exist
+        """
         spec = UserIDSpecification(id=user_id)
 
         if update_schema.password:
@@ -114,10 +170,30 @@ class UserService:
     # async def authenticate(
     #         self, *, email: EmailStr, password: str
     # ) -> Optional[User]:
-    #     ...
+    #     """
+    #     Authenticate a user.
+
+    #     Args:
+    #         email (EmailStr): the email address of the user to authenticate
+    #         password (str): the password of the user to authenticate
+
+    #     Returns:
+    #         Optional[User]: the authenticated user, or None if the authentication failed
+    #     """
+    #    ...
 
     @classmethod
-    async def delete(cls, uow: UnitOfWork, *, user_id: int) -> Optional[User]:
+    async def delete(cls, uow: UnitOfWork, *, user_id: int) -> User or HTTPException:
+        """
+        Delete an existing user.
+
+        Args:
+            uow (UnitOfWork): a dependency injection of the UnitOfWork class for managing database transactions
+            user_id (int): the ID of the user to delete
+
+        Returns:
+            User or HTTPException: the deleted user or a HTTPException if the user does not exist
+        """
         spec = UserIDSpecification(id=user_id)
 
         async with uow:
@@ -128,7 +204,3 @@ class UserService:
             await uow.commit()
 
         return user
-
-
-class UserProfileService:
-    ...

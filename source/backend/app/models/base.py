@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import TIMESTAMP, func, Integer
+from sqlalchemy import TIMESTAMP, Integer, func
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import (
     DeclarativeBase,

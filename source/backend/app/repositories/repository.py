@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Generic, Optional, Type, TypeVar, overload, List, Union
+from typing import Any, Generic, List, Optional, Type, TypeVar, Union, overload
 
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -14,8 +14,20 @@ SpecificationType = TypeVar("SpecificationType", bound=ISpecification)
 
 
 class IRepository(ABC):
+    """
+    Interface for a repository that handles database operations for a specific model.
+
+    Methods:
+
+    get: Gets a single entity from the repository based on a specification.
+    get_multi: Gets multiple entities from the repository based on pagination parameters.
+    create: Creates a new entity in the repository.
+    update: Updates an existing entity in the repository based on a specification.
+    delete: Deletes an existing entity from the repository based on a specification.
+    """
+
     @abstractmethod
-    def get(self, *, obj_id):
+    def get(self, *, spec: Optional[SpecificationType]):
         raise NotImplementedError
 
     @abstractmethod
@@ -27,15 +39,31 @@ class IRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def update(self, *, obj_id, update_schema):
+    def update(self, *, spec: SpecificationType, update_schema):
         raise NotImplementedError
 
     @abstractmethod
-    def delete(self, *, obj_id):
+    def delete(self, *, spec: SpecificationType):
         raise NotImplementedError
 
 
 class Repository(IRepository, Generic[ModelType, CreateSchema, UpdateSchema]):
+    """
+    This class implements the IRepository interface for a specific model.
+
+    Args:
+        model (Type[ModelType]): The SQLAlchemy model class that this repository is for.
+        session (AsyncSession): The SQLAlchemy async session that will be used for database operations.
+
+    Methods:
+
+    get: Gets a single entity from the repository based on a specification.
+    get_multi: Gets multiple entities from the repository based on pagination parameters.
+    create: Creates a new entity in the repository.
+    update: Updates an existing entity in the repository based on a specification.
+    delete: Deletes an existing entity from the repository based on a specification.
+    """
+
     def __init__(self, model: Type[ModelType], session: AsyncSession) -> None:
         self.model = model
         self._session = session
@@ -44,25 +72,25 @@ class Repository(IRepository, Generic[ModelType, CreateSchema, UpdateSchema]):
         self, *, spec: Optional[SpecificationType] = None
     ) -> Optional[ModelType]:
         """
-        Get an object from the database based on a specification.
+        Gets a single entity from the repository based on a specification.
 
-        :param: spec (Optional[ISpecification]): A specification object used to filter the results.
+        Args:
+            spec (Optional[SpecificationType]): The specification used to filter the results.
 
         Returns:
-            Optional[ModelType]: The object that matches the specification, or None if no match is found.
+            Optional[ModelType]: The matching entity, or None if no match was found.
         """
-
         return await self._session.scalar(
-            select(self.model).filter(spec.is_satisfied_by(self.model))
+            select(self.model).filter(
+                None if not spec else spec.is_satisfied_by(self.model)
+            )
         )
 
     @overload
-    async def get_multi(self, *, skip: int, limit: int) -> List[ModelType]:
-        ...
+    async def get_multi(self, *, skip: int, limit: int) -> List[ModelType]: ...
 
     @overload
-    async def get_multi(self, *, skip: None, limit: None) -> List[ModelType]:
-        ...
+    async def get_multi(self, *, skip: None, limit: None) -> List[ModelType]: ...
 
     async def get_multi(
         self,
@@ -71,43 +99,44 @@ class Repository(IRepository, Generic[ModelType, CreateSchema, UpdateSchema]):
         limit: Optional[int] = 100,
     ) -> List[ModelType]:
         """
-        `get_multi` method returns the list of ORM objects from database
+        Gets multiple entities from the repository based on pagination parameters.
 
-        :param skip:
-        :param limit:
-        :return: The list of database ORM objects with specific the ``OFFSET`` and ``LIMIT`` arguments
+        Args:
+            skip (Optional[int]): The number of results to skip.
+            limit (Optional[int]): The maximum number of results to return.
 
+        Returns:
+            List[ModelType]: The matching entities.
         """
-        try:
-            result = await self._session.scalars(
-                select(self.model).offset(skip).limit(limit)
-            )
+        result = await self._session.execute(
+            select(self.model).offset(skip).limit(limit)
+        )
 
-            return result
-
-        except Exception as ex:
-            raise ex
+        return list(result.scalars().all())
 
     async def create(
         self,
-        *,
-        create_schema: Union[CreateSchema, dict[str, Any]],
+        *,  #
+        create_schema: dict[str, Any] | CreateSchema,
     ) -> ModelType:
         """
-        `create` method creates a new created object in the database
+        Creates a new entity in the repository.
 
-        :param create_schema: DTO to retrieve data for a new database object
-        :return: A new ORM object from database
+        Args:
+            create_schema (Union[CreateSchema, dict[str, Any]]): The data used to create the entity,
+                either as a CreateSchema instance or a dictionary of field values.
 
+        Returns:
+            ModelType: The created entity.
         """
         try:
             if isinstance(create_schema, dict):
-                db_obj = self.model(**create_schema)
+                db_obj = ModelType(**create_schema)
                 self._session.add(db_obj)
 
                 return db_obj
 
-            db_obj = self.model(**create_schema.model_dump())
+            db_obj = ModelType(**create_schema.model_dump())
             self._session.add(db_obj)
 
             return db_obj
@@ -122,12 +151,15 @@ class Repository(IRepository, Generic[ModelType, CreateSchema, UpdateSchema]):
         update_schema: Union[UpdateSchema, dict[str, Any]],
     ) -> Optional[ModelType]:
         """
-        `update` method completely or partially updates an already created object in the database
+        Updates an existing entity in the repository based on a specification.
 
-        :param spec: A specification object used to filter the object to update.
-        :param update_schema: DTO for updated data for a database object
-        :return: An ORM updated object from database if specific identifier is specified, else returns ``None``
+        Args:
+            spec (SpecificationType): The specification used to filter the results.
+            update_schema (Union[UpdateSchema, dict[str, Any]]): The data used to update the entity,
+                either as an UpdateSchema instance or a dictionary of field values.
 
+        Returns:
+            Optional[ModelType]: The updated entity, or None if no match was found.
         """
         try:
             if isinstance(update_schema, dict):
@@ -158,11 +190,13 @@ class Repository(IRepository, Generic[ModelType, CreateSchema, UpdateSchema]):
 
     async def delete(self, *, spec: SpecificationType) -> Optional[ModelType]:
         """
-        `delete` method deletes an object in the database
+        Deletes an existing entity from the repository based on a specification.
 
-        :param spec: A specification object used to filter the object to update.
-        :return: A deleted object if specific identifier is specified, else returns ``None``
+        Args:
+            spec (SpecificationType): The specification used to filter the results.
 
+        Returns:
+            Optional[ModelType]: The deleted entity, or None if no match was found.
         """
         try:
             obj = await self.get(spec=spec)

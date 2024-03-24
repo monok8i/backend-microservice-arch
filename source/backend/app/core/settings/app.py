@@ -1,12 +1,12 @@
 from pathlib import Path
-from typing import Optional, Any, Dict
+from typing import Any, Dict, Optional
 
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from pydantic import PostgresDsn, RedisDsn, field_validator
 from pydantic_core.core_schema import FieldValidationInfo
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from redis.asyncio import Redis, ConnectionPool
+from redis.asyncio import ConnectionPool, Redis
 
 
 class ServiceSettings(BaseSettings):
@@ -51,7 +51,7 @@ class Settings(BaseSettings):
 
         @field_validator("SQLALCHEMY_DATABASE_URI", mode="before")
         def assemble_db_connection(
-            cls, v: Optional[str], info: FieldValidationInfo
+            self, v: Optional[str], info: FieldValidationInfo
         ) -> Any:
             if isinstance(v, str):
                 return v
@@ -67,8 +67,9 @@ class Settings(BaseSettings):
             )
 
     class Authentication(ServiceSettings):
-        ACCESS_TOKEN_EXPIRE_MINUTES: Optional[int] = 1
-        REFRESH_TOKEN_EXPIRE_DAYS: Optional[int] = 30
+        TOKEN_TYPE: str = "bearer"
+        ACCESS_TOKEN_EXPIRE_MINUTES: int = 1
+        REFRESH_TOKEN_EXPIRE_DAYS: int = 30
         JWT_PRIVATE_PATH: Path
         JWT_PUBLIC_PATH: Path
         ALGORITHM: str = "RS256"
@@ -83,7 +84,7 @@ class Settings(BaseSettings):
 
         @field_validator("REDIS_URI", mode="before")
         def assemble_db_connection(
-            cls, v: Optional[str], info: FieldValidationInfo
+            self, v: Optional[str], info: FieldValidationInfo
         ) -> Any:
             if isinstance(v, str):
                 return v

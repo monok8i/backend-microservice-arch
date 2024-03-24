@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ..models import User, RefreshSession
+from ..models import RefreshSession, User
 
 
 class ISpecification(ABC):

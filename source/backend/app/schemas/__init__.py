@@ -1,4 +1,4 @@
-from .token import Token, TokenPayload, RefreshSessionCreate, RefreshSessionUpdate
+from .token import RefreshSessionCreate, RefreshSessionUpdate, Token, TokenPayload
 from .user import (
     User,
     UserCreate,
