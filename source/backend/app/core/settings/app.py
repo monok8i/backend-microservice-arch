@@ -51,7 +51,9 @@ class Settings(BaseSettings):
 
         @field_validator("SQLALCHEMY_DATABASE_URI", mode="before")
         def assemble_db_connection(
-            self, v: Optional[str], info: FieldValidationInfo
+            cls,  # noqa: N805
+            v: Optional[str],
+            info: FieldValidationInfo,
         ) -> Any:
             if isinstance(v, str):
                 return v
@@ -68,7 +70,7 @@ class Settings(BaseSettings):
 
     class Authentication(ServiceSettings):
         TOKEN_TYPE: str = "bearer"
-        ACCESS_TOKEN_EXPIRE_MINUTES: int = 1
+        ACCESS_TOKEN_EXPIRE_MINUTES: int = 5
         REFRESH_TOKEN_EXPIRE_DAYS: int = 30
         JWT_PRIVATE_PATH: Path
         JWT_PUBLIC_PATH: Path
@@ -84,7 +86,9 @@ class Settings(BaseSettings):
 
         @field_validator("REDIS_URI", mode="before")
         def assemble_db_connection(
-            self, v: Optional[str], info: FieldValidationInfo
+            cls,  # noqa: N805
+            v: Optional[str],
+            info: FieldValidationInfo,
         ) -> Any:
             if isinstance(v, str):
                 return v

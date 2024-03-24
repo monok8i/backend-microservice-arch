@@ -87,10 +87,12 @@ class Repository(IRepository, Generic[ModelType, CreateSchema, UpdateSchema]):
         )
 
     @overload
-    async def get_multi(self, *, skip: int, limit: int) -> List[ModelType]: ...
+    async def get_multi(self, *, skip: int, limit: int) -> List[ModelType]:
+        ...
 
     @overload
-    async def get_multi(self, *, skip: None, limit: None) -> List[ModelType]: ...
+    async def get_multi(self, *, skip: None, limit: None) -> List[ModelType]:
+        ...
 
     async def get_multi(
         self,
@@ -131,12 +133,12 @@ class Repository(IRepository, Generic[ModelType, CreateSchema, UpdateSchema]):
         """
         try:
             if isinstance(create_schema, dict):
-                db_obj = ModelType(**create_schema)
+                db_obj = self.model(**create_schema)
                 self._session.add(db_obj)
 
                 return db_obj
 
-            db_obj = ModelType(**create_schema.model_dump())
+            db_obj = self.model(**create_schema.model_dump())
             self._session.add(db_obj)
 
             return db_obj
