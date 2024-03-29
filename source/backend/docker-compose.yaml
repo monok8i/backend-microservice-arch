@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  backend:
+    image: backend-users:latest
+    container_name: backend-users
+    build:
+      context: ./users-service/
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    restart: always
+    depends_on:
+      - postgres
+    #      - redis
+    networks:
+      - backend
+
+  postgres:
+    container_name: postgres
+    image: postgres:16-alpine
+    restart: always
+    env_file: ./.env
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    expose:
+      - "${POSTGRES_PORT}"
+    volumes:
+      - ./users-service/scripts/init-db-entrypoint.sh:/docker-entrypoint-initdb.d/init-db-entrypoint.sh
+    networks:
+      - backend
+
+#  redis:
+#    image: redis:7-alpine
+#    container_name: redis
+#    restart: always
+#    env_file: ./.env
+#    ports:
+#      - "${REDIS_PORT}:${REDIS_PORT}"
+#    expose:
+#      - "${REDIS_PORT}"
+#    networks:
+#      - backend
+
+#  nginx:
+#    image: nginx:latest
+#    container_name: proxy
+#    restart: always
+#    ports:
+#      - "80:80"
+#    volumes:
+#      - ../nginx/nginx.conf:/etc/nginx/nginx.conf
+#    networks:
+#      - backend
+
+networks:
+  backend:
+    name: backend
+    driver: bridge
