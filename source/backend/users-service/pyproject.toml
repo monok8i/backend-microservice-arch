@@ -65,7 +65,7 @@ exclude = [
     ".certs",
     "poetry.lock",
 ]
-ignore = ["F401"]
+ignore = ["F401", "ISC001"]
 
 
 [tool.mypy]

@@ -47,3 +47,11 @@ class InvalidCredentialsException(HTTPException):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",
         )
+
+
+class RefreshSessionNotFoundException(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Refresh session not found",
+        )

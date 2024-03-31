@@ -19,11 +19,9 @@ async def access_token(
         *,
         credentials: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> schemas.Token:
-    user = await service.auth.authenticate_user(
+    token = await service.auth.authenticate_user(
         uow, email=credentials.username, password=credentials.password
     )
-
-    token = await service.auth.create_token(uow, user.id)
 
     response.set_cookie(
         "refresh_token",
@@ -32,11 +30,7 @@ async def access_token(
         httponly=True,
     )
 
-    return schemas.Token(
-        access_token=token.access_token,
-        refresh_token=token.refresh_token,
-        token_type=config.auth.TOKEN_TYPE,
-    )
+    return token
 
 
 @router.post("/refresh", response_model=schemas.Token)

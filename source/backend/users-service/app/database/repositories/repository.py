@@ -83,9 +83,7 @@ class Repository(IRepository, Generic[ModelType, CreateSchema, UpdateSchema]):
             Optional[ModelType]: The matching entity, or None if no match was found.
         """
         return await self._session.scalar(
-            select(self.model).filter(
-                None if not spec else spec.is_satisfied_by(self.model)
-            )
+            select(self.model).filter(spec.is_satisfied_by(self.model))
         )
 
     @overload

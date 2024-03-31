@@ -11,7 +11,7 @@ from .user import UserService
 from ..core import settings as config
 from ..core.security import verify_password
 from ..database.uow import UnitOfWork
-from ..models import User
+from ..models import RefreshSession
 from ..schemas import RefreshSessionCreate, Token
 from ..utils.exceptions import (
     InvalidCredentialsException,
@@ -26,12 +26,12 @@ hash_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class AuthenticationService:
     @classmethod
     def encode_jwt_token(
-            cls,
-            subject: Union[str, Any],
-            private_key: str = config.auth.JWT_PRIVATE_PATH.read_text(),
-            algorithm: str = config.auth.ALGORITHM,
-            *,
-            expires: timedelta | None = None,
+        cls,
+        subject: Union[str, Any],
+        private_key: str = config.auth.JWT_PRIVATE_PATH.read_text(),
+        algorithm: str = config.auth.ALGORITHM,
+        *,
+        expires: timedelta | None = None,
     ) -> str:
         """
         Encodes a JWT token.
@@ -62,10 +62,10 @@ class AuthenticationService:
 
     @classmethod
     def decode_jwt_token(
-            cls,
-            token: str,
-            public_key: str = config.auth.JWT_PUBLIC_PATH.read_text(),
-            algorithm: str = config.auth.ALGORITHM,
+        cls,
+        token: str,
+        public_key: str = config.auth.JWT_PUBLIC_PATH.read_text(),
+        algorithm: str = config.auth.ALGORITHM,
     ) -> Any:
         """
         Decodes a JWT token.
@@ -94,22 +94,11 @@ class AuthenticationService:
         return secrets.token_urlsafe(lenght)
 
     @classmethod
-    async def create_token(cls, uow: UnitOfWork, user_id: int) -> Token:
-        """
-        Creates a new access and refresh token for the given user.
-
-        Args:
-            uow (UnitOfWork): The active unit of work.
-            user_id (int): The ID of the user for whom the tokens are being created.
-
-        Returns:
-            Token: The newly created access and refresh tokens.
-        """
-        access_token = cls.encode_jwt_token(user_id)
+    async def create_session(cls, uow: UnitOfWork, user_id: int) -> RefreshSession:
         refresh_token = cls._generate_refresh_token()
 
         async with uow:
-            await uow.refresh_session.create(
+            session = await uow.refresh_session.create(
                 create_schema=RefreshSessionCreate(
                     refresh_token=refresh_token,
                     expires_in=timedelta(
@@ -121,15 +110,11 @@ class AuthenticationService:
 
             await uow.commit()
 
-        return Token(
-            access_token=access_token,
-            refresh_token=refresh_token,
-            token_type=config.auth.TOKEN_TYPE,
-        )
+        return session
 
     @classmethod
     async def refresh_token(
-            cls, uow: UnitOfWork, refresh_token: str
+        cls, uow: UnitOfWork, refresh_token: str
     ) -> Token | HTTPException:
         """
         Refreshes an access token using a refresh token.
@@ -150,7 +135,7 @@ class AuthenticationService:
                 raise InvalidTokenException
 
             if datetime.utcnow() > refresh_session.created_at + timedelta(  # noqa: DTZ003
-                    seconds=refresh_session.expires_in
+                seconds=refresh_session.expires_in
             ):
                 await uow.refresh_session.delete(spec=spec)
                 raise TokenExpiredException
@@ -173,31 +158,28 @@ class AuthenticationService:
 
     @classmethod
     async def authenticate_user(
-            cls, uow: UnitOfWork, *, email: EmailStr, password: str
-    ) -> User | InvalidCredentialsException:
-        """
-        Authenticates a user using their email and password.
+        cls, uow: UnitOfWork, *, email: EmailStr, password: str
+    ) -> Token | InvalidCredentialsException:
+        user = await UserService.get_user_with_refresh_session(uow, email=email)
 
-        Args:
-            uow (UnitOfWork): The active unit of work.
-            email (EmailStr): The email of the user.
-            password (str): The password of the user.
-
-        Returns:
-            User | InvalidCredentialsException: The authenticated user or an exception if the credentials are invalid.
-        """
-        user = await UserService.get_by_email(uow, email=email)
-
-        if not user:
-            raise InvalidCredentialsException
-
-        if not verify_password(
-                user_password=password,
-                hashed_password=user.hashed_password,
+        if not user or not verify_password(
+            user_password=password, hashed_password=user.hashed_password
         ):
             raise InvalidCredentialsException
 
-        return user
+        if not user.refresh_session:
+            async with cls.create_session(uow, user_id=user.id) as session:
+                return Token(
+                    access_token=cls.encode_jwt_token(user.id),
+                    refresh_token=session.refresh_token,
+                    token_type=config.auth.TOKEN_TYPE,
+                )
+
+        return Token(
+            access_token=cls.encode_jwt_token(user.id),
+            refresh_token=user.refresh_session.refresh_token,
+            token_type=config.auth.TOKEN_TYPE,
+        )
 
     @classmethod
     async def logout(cls, uow: UnitOfWork, refresh_token: str) -> None:
@@ -221,7 +203,7 @@ class AuthenticationService:
                 raise InvalidTokenException
 
             if datetime.utcnow() > refresh_session.created_at + timedelta(  # noqa: DTZ003
-                    seconds=refresh_session.expires_in
+                seconds=refresh_session.expires_in
             ):
                 await uow.refresh_session.delete(spec=spec)
                 raise TokenExpiredException

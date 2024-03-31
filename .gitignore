@@ -120,7 +120,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+source/backend/users-service/.env
 .venv
 env/
 venv/
@@ -298,3 +298,4 @@ dist
 .pnp.*
 
 frontend/
+nginx/

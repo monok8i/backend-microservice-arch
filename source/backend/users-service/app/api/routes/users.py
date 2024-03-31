@@ -11,11 +11,13 @@ router = APIRouter()
 
 
 @router.get("/me", response_model=schemas.User, status_code=status.HTTP_200_OK)
+@cache(expire=60, namespace="me")
 async def get_me(current_user: CurrentUser) -> models.User:
     return current_user
 
 
 @router.get("/{user_id}", response_model=schemas.User, status_code=status.HTTP_200_OK)
+@cache(expire=60, namespace="specific_user")
 async def get_user(
         uow: UnitOfWorkContext, *, user_id: int
 ) -> Union[models.User, HTTPException]:
@@ -23,7 +25,7 @@ async def get_user(
 
 
 @router.get("/", response_model=List[schemas.User], status_code=status.HTTP_200_OK)
-@cache(expire=60, namespace="users-service")
+@cache(expire=60, namespace="all_users")
 async def get_users(
         uow: UnitOfWorkContext,
         *,

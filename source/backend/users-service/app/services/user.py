@@ -7,7 +7,10 @@ from ..core.security import generate_hashed_password
 from ..database.uow import UnitOfWork
 from ..models import User
 from ..schemas import UserCreate, UserUpdate
-from ..utils.exceptions import UserAlreadyExistsException, UserNotFoundException
+from ..utils.exceptions import (
+    UserAlreadyExistsException,
+    UserNotFoundException,
+)
 from ..utils.specification import UserEmailSpecification, UserIDSpecification
 
 
@@ -38,6 +41,16 @@ class UserService:
 
         if not user:
             raise UserNotFoundException(spec=spec)
+
+        return user
+
+    @classmethod
+    async def get_user_with_refresh_session(cls, uow: UnitOfWork, email: EmailStr):
+        spec = UserEmailSpecification(email=email)
+
+        async with uow:
+            user = await uow.user.get_user_refresh_session(spec=spec)
+            await uow.commit()
 
         return user
 
