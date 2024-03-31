@@ -21,6 +21,6 @@ env_type_settings = {
 
 
 class CurrentEnvType(BaseSettings):
-    env_type: EnvType = EnvType.test
+    env_type: EnvType = EnvType.dev
 
     model_config = env_type_settings[env_type]

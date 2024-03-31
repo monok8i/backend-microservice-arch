@@ -90,6 +90,3 @@ venv/
 
 # VS Code
 .vscode/
-
-# Other
-Makefile

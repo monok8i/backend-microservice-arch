@@ -1,4 +1,3 @@
-import uuid  # noqa: I001
 from typing import List
 
 from fastapi import HTTPException
@@ -113,7 +112,6 @@ class UserService:
             _schema["hashed_password"] = generate_hashed_password(
                 password=create_schema.password
             )
-            _schema["referral_code"] = uuid.uuid4()
 
             async with uow:
                 user = await uow.user.create(create_schema=_schema)

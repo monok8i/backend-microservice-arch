@@ -1,5 +1,4 @@
 from typing import Optional
-from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
 
@@ -23,4 +22,3 @@ class UserUpdate(UserBase):
 
 class User(UserBase):
     id: Optional[int] = None
-    referral_code: Optional[UUID] = None
