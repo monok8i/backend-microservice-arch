@@ -22,7 +22,7 @@ TokenDep = Annotated[str, Depends(oauth2)]
 
 
 async def get_current_user(
-        uow: UnitOfWorkContext, token: TokenDep
+    uow: UnitOfWorkContext, token: TokenDep
 ) -> Union[User, HTTPException]:
     try:
         payload = service.auth.decode_jwt_token(token=token)

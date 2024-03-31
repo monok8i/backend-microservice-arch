@@ -26,12 +26,12 @@ hash_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class AuthenticationService:
     @classmethod
     def encode_jwt_token(
-        cls,
-        subject: Union[str, Any],
-        private_key: str = config.auth.JWT_PRIVATE_PATH.read_text(),
-        algorithm: str = config.auth.ALGORITHM,
-        *,
-        expires: timedelta | None = None,
+            cls,
+            subject: Union[str, Any],
+            private_key: str = config.auth.JWT_PRIVATE_PATH.read_text(),
+            algorithm: str = config.auth.ALGORITHM,
+            *,
+            expires: timedelta | None = None,
     ) -> str:
         """
         Encodes a JWT token.
@@ -62,10 +62,10 @@ class AuthenticationService:
 
     @classmethod
     def decode_jwt_token(
-        cls,
-        token: str,
-        public_key: str = config.auth.JWT_PUBLIC_PATH.read_text(),
-        algorithm: str = config.auth.ALGORITHM,
+            cls,
+            token: str,
+            public_key: str = config.auth.JWT_PUBLIC_PATH.read_text(),
+            algorithm: str = config.auth.ALGORITHM,
     ) -> Any:
         """
         Decodes a JWT token.
@@ -114,7 +114,7 @@ class AuthenticationService:
 
     @classmethod
     async def refresh_token(
-        cls, uow: UnitOfWork, refresh_token: str
+            cls, uow: UnitOfWork, refresh_token: str
     ) -> Token | HTTPException:
         """
         Refreshes an access token using a refresh token.
@@ -135,7 +135,7 @@ class AuthenticationService:
                 raise InvalidTokenException
 
             if datetime.utcnow() > refresh_session.created_at + timedelta(  # noqa: DTZ003
-                seconds=refresh_session.expires_in
+                    seconds=refresh_session.expires_in
             ):
                 await uow.refresh_session.delete(spec=spec)
                 raise TokenExpiredException
@@ -158,12 +158,23 @@ class AuthenticationService:
 
     @classmethod
     async def authenticate_user(
-        cls, uow: UnitOfWork, *, email: EmailStr, password: str
+            cls, uow: UnitOfWork, *, email: EmailStr, password: str
     ) -> Token | InvalidCredentialsException:
+        """
+        Authenticates a user using their email and password. If the user is found and their password is valid, a new access and refresh token will be generated and returned. If the user is not found or their password is invalid, an InvalidCredentialsException will be raised.
+
+        Args:
+            uow (UnitOfWork): The active unit of work.
+            email (EmailStr): The email of the user.
+            password (str): The password of the user.
+
+        Returns:
+            Token | InvalidCredentialsException: A new access and refresh token if the user is authenticated, or an InvalidCredentialsException if the user is not found or their password is invalid.
+        """
         user = await UserService.get_user_with_refresh_session(uow, email=email)
 
         if not user or not verify_password(
-            user_password=password, hashed_password=user.hashed_password
+                user_password=password, hashed_password=user.hashed_password
         ):
             raise InvalidCredentialsException
 
@@ -203,7 +214,7 @@ class AuthenticationService:
                 raise InvalidTokenException
 
             if datetime.utcnow() > refresh_session.created_at + timedelta(  # noqa: DTZ003
-                seconds=refresh_session.expires_in
+                    seconds=refresh_session.expires_in
             ):
                 await uow.refresh_session.delete(spec=spec)
                 raise TokenExpiredException

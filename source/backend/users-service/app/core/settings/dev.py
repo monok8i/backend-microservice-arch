@@ -22,9 +22,9 @@ class Database(CurrentEnvType):
 
     @field_validator("SQLALCHEMY_DATABASE_URI", mode="before")
     def assemble_db_connection(
-            cls,  # noqa: N805
-            v: Optional[str],
-            info: FieldValidationInfo,
+        cls,  # noqa: N805
+        v: Optional[str],
+        info: FieldValidationInfo,
     ) -> Any:
         if isinstance(v, str):
             return v
@@ -58,9 +58,9 @@ class RedisCache(CurrentEnvType):
 
     @field_validator("REDIS_URI", mode="before")
     def assemble_db_connection(
-            cls,  # noqa: N805
-            v: Optional[str],
-            info: FieldValidationInfo,
+        cls,  # noqa: N805
+        v: Optional[str],
+        info: FieldValidationInfo,
     ) -> Any:
         if isinstance(v, str):
             return v
@@ -79,7 +79,6 @@ class RedisCache(CurrentEnvType):
 
 
 class DevSettings(CurrentEnvType):
-
     @property
     def common(self) -> CommonSettings:
         return CommonSettings()

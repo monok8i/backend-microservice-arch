@@ -22,7 +22,7 @@ class UserService:
     """
 
     @classmethod
-    async def get_by_id(cls, uow: UnitOfWork, *, user_id: int) -> User or HTTPException:
+    async def get_by_id(cls, uow: UnitOfWork, *, user_id: int) -> User | HTTPException:
         """
         Get a user by their ID.
 
@@ -45,7 +45,7 @@ class UserService:
         return user
 
     @classmethod
-    async def get_user_with_refresh_session(cls, uow: UnitOfWork, email: EmailStr):
+    async def get_user_with_refresh_session(cls, uow: UnitOfWork, email: EmailStr) -> User:
         spec = UserEmailSpecification(email=email)
 
         async with uow:
@@ -107,7 +107,7 @@ class UserService:
             uow: UnitOfWork,
             *,
             create_schema: UserCreate,
-    ) -> User or HTTPException:
+    ) -> User | HTTPException:
         """
         Create a new user.
 
@@ -138,7 +138,7 @@ class UserService:
     @classmethod
     async def update(
             cls, uow: UnitOfWork, *, user_id: int, update_schema: UserUpdate
-    ) -> User or HTTPException:
+    ) -> User | HTTPException:
         """
         Update an existing user.
 
@@ -177,21 +177,6 @@ class UserService:
             raise UserNotFoundException(spec=spec)
 
         return user
-
-    # async def authenticate(
-    #         self, *, email: EmailStr, password: str
-    # ) -> Optional[User]:
-    #     """
-    #     Authenticate a user.
-
-    #     Args:
-    #         email (EmailStr): the email address of the user to authenticate
-    #         password (str): the password of the user to authenticate
-
-    #     Returns:
-    #         Optional[User]: the authenticated user, or None if the authentication failed
-    #     """
-    #    ...
 
     @classmethod
     async def delete(cls, uow: UnitOfWork, *, user_id: int) -> User or HTTPException:

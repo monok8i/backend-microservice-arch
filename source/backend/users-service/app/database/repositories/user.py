@@ -13,7 +13,17 @@ SpecificationType = TypeVar("SpecificationType", bound=ISpecification)
 
 
 class UserRepository(Repository[User, UserCreate, UserUpdate]):
-    async def get_user_refresh_session(self, spec: Optional[SpecificationType] = None) -> User:
+    async def get_user_refresh_session(
+            self, spec: Optional[SpecificationType] = None
+    ) -> User:
+        """Get a user with their associated refresh session.
+
+        Args:
+            spec (Optional[ISpecification]): A filter specification.
+
+        Returns:
+            User: The user with their associated refresh session.
+        """
         return await self._session.scalar(
             select(User)
             .filter(spec.is_satisfied_by(User))

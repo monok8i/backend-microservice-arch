@@ -54,21 +54,16 @@ class Repository(IRepository, Generic[ModelType, CreateSchema, UpdateSchema]):
     Args:
         model (Type[ModelType]): The SQLAlchemy model class that this repository is for.
         session (AsyncSession): The SQLAlchemy async session that will be used for database operations.
-
-    Methods:
-
-    get: Gets a single entity from the repository based on a specification.
-    get_multi: Gets multiple entities from the repository based on pagination parameters.
-    create: Creates a new entity in the repository.
-    update: Updates an existing entity in the repository based on a specification.
-    delete: Deletes an existing entity from the repository based on a specification.
     """
 
     def __init__(self, model: Type[ModelType], session: AsyncSession) -> None:
         self.model = model
         self._session = session
 
-    __slots__ = ("model", "_session",)
+    __slots__ = (
+        "model",
+        "_session",
+    )
 
     async def get(
             self, *, spec: Optional[SpecificationType] = None

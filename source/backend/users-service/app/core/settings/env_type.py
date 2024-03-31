@@ -9,14 +9,8 @@ class EnvType(Enum):
 
 
 env_type_settings = {
-    EnvType.dev: SettingsConfigDict(
-        env_file=".env.dev",
-        extra="ignore"
-    ),
-    EnvType.test: SettingsConfigDict(
-        env_file=".env.test",
-        extra="ignore"
-    )
+    EnvType.dev: SettingsConfigDict(env_file=".env.dev", extra="ignore"),
+    EnvType.test: SettingsConfigDict(env_file=".env.test", extra="ignore"),
 }
 
 

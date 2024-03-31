@@ -14,10 +14,10 @@ router = APIRouter()
 
 @router.post("/login", response_model=schemas.Token)
 async def access_token(
-        response: Response,
-        uow: UnitOfWorkContext,
-        *,
-        credentials: Annotated[OAuth2PasswordRequestForm, Depends()],
+    response: Response,
+    uow: UnitOfWorkContext,
+    *,
+    credentials: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> schemas.Token:
     token = await service.auth.authenticate_user(
         uow, email=credentials.username, password=credentials.password
@@ -35,8 +35,8 @@ async def access_token(
 
 @router.post("/refresh", response_model=schemas.Token)
 async def refresh_access_token(
-        request: Request,
-        uow: UnitOfWorkContext,
+    request: Request,
+    uow: UnitOfWorkContext,
 ) -> schemas.Token:
     refresh_token = request.cookies.get("refresh_token")
 
@@ -48,9 +48,9 @@ async def refresh_access_token(
 
 @router.post("/logout")
 async def logout(
-        request: Request,
-        response: Response,
-        uow: UnitOfWorkContext,
+    request: Request,
+    response: Response,
+    uow: UnitOfWorkContext,
 ) -> None:
     refresh_token = request.cookies.get("refresh_token")
 
