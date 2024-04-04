@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, String
+from sqlalchemy import Boolean, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -19,6 +19,7 @@ class User(Base):
 class RefreshSession(Base):
     refresh_token: Mapped[str] = mapped_column(String)
     expires_in: Mapped[int]
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
     user: Mapped["User"] = relationship(
         "User", back_populates="refresh_session", uselist=False
