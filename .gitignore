@@ -298,3 +298,6 @@ dist
 .pnp.*
 
 frontend/
+
+# nginx (temporarily)
+nginx/
