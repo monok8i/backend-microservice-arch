@@ -67,6 +67,8 @@ class RedisCache(CurrentEnvType):
         return str(
             RedisDsn.build(
                 scheme="redis",
+                username=info.data.get("REDIS_USER"),
+                password=info.data.get("REDIS_PASSWORD"),
                 host=info.data.get("REDIS_HOST"),
                 port=info.data.get("REDIS_PORT"),
             )

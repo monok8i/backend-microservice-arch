@@ -18,6 +18,6 @@ RUN poetry config virtualenvs.create false \
     && poetry install --no-root
 
 
-RUN chmod +x ./backend.sh
+RUN chmod +x ./scripts/
 
-ENTRYPOINT ./backend.sh
+ENTRYPOINT ./scripts/backend.sh
