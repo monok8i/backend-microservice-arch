@@ -298,4 +298,3 @@ dist
 .pnp.*
 
 frontend/
-nginx/
