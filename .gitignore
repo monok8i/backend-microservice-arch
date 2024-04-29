@@ -303,3 +303,9 @@ frontend/
 nginx/
 
 email-service/
+
+rabbitmq/
+redis/
+
+Dockerfile
+docker-compose.yaml
