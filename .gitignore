@@ -309,3 +309,4 @@ redis/
 
 Dockerfile
 docker-compose.yaml
+Makefile
