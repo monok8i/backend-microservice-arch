@@ -301,3 +301,5 @@ frontend/
 
 # nginx (temporarily)
 nginx/
+
+email-service/
