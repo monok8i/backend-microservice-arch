@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "litestar-users-service"
+version = "0.1.0"
+description = "The basic users service is written in Litestar"
+authors = ["monok8i <didkivskiyyura725@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+uvicorn = "^0.29.0"
+pydantic-settings = "^2.2.1"
+asyncpg = "^0.29.0"
+structlog = "^24.1.0"
+pydantic = {extras = ["email"], version = "^2.7.1"}
+passlib = "^1.7.4"
+bcrypt = "^4.1.2"
+litestar = {extras = ["standart"], version = "^2.8.2"}
+advanced-alchemy = "0.9.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.4.1"
+mypy = "^1.9.0"
+pre-commit = "^3.7.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
