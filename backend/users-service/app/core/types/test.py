@@ -85,61 +85,14 @@ class LogSettings(CurrentEnvType):
     """Request cookie keys to obfuscate."""
     OBFUSCATE_HEADERS: set[str] = {"Authorization", "X-API-KEY"}
     """Request header keys to obfuscate."""
-    # JOB_FIELDS: list[str] = (
-    #     [
-    #         "function",
-    #         "kwargs",
-    #         "key",
-    #         "scheduled",
-    #         "attempts",
-    #         "completed",
-    #         "queued",
-    #         "started",
-    #         "result",
-    #         "error",
-    #     ],
-    # )
-    # """Attributes of the SAQ.
 
-    # [`Job`](https://github.com/tobymao/saq/blob/master/saq/job.py) to be
-    # logged.
-    # """
-    # REQUEST_FIELDS: list[RequestExtractorField] = (
-    #     [
-    #         "path",
-    #         "method",
-    #         "headers",
-    #         "cookies",
-    #         "query",
-    #         "path_params",
-    #         "body",
-    #     ],
-    # )
-    # """Attributes of the [Request][litestar.connection.request.Request] to be
-    # logged."""
-    # RESPONSE_FIELDS: list[ResponseExtractorField] = (
-    #     [
-    #         "status_code",
-    #         "cookies",
-    #         "headers",
-    #         "body",
-    #     ],
-    # )
-    """Attributes of the [Response][litestar.response.Response] to be
-    logged."""
     WORKER_EVENT: str = "Worker"
     """Log event name for logs from SAQ worker."""
-    SAQ_LEVEL: int = 20
-    """Level to log SAQ logs."""
     SQLALCHEMY_LEVEL: int = 20
     """Level to log SQLAlchemy logs."""
     UVICORN_ACCESS_LEVEL: int = 20
     """Level to log uvicorn access logs."""
     UVICORN_ERROR_LEVEL: int = 20
-    """Level to log uvicorn error logs."""
-    GRANIAN_ACCESS_LEVEL: int = 30
-    """Level to log uvicorn access logs."""
-    GRANIAN_ERROR_LEVEL: int = 20
     """Level to log uvicorn error logs."""
 
 
