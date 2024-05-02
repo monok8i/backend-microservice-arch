@@ -31,4 +31,4 @@ def provide_limit_offset_filter(
 
 
 def provide_dependencies() -> Dict[str, Provide]:
-    return {LIMIT_OFFSET_DEPENDENCY_KEY: Provide(provide_limit_offset_filter)}
+    return {LIMIT_OFFSET_DEPENDENCY_KEY: Provide(provide_limit_offset_filter, sync_to_thread=False)}

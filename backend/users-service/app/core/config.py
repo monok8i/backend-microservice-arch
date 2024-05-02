@@ -53,21 +53,6 @@ log_config = StructlogConfig(
                     "level": settings.logging.UVICORN_ERROR_LEVEL,
                     "handlers": ["queue_listener"],
                 },
-                "granian.access": {
-                    "propagate": False,
-                    "level": settings.logging.GRANIAN_ACCESS_LEVEL,
-                    "handlers": ["queue_listener"],
-                },
-                "granian.error": {
-                    "propagate": False,
-                    "level": settings.logging.GRANIAN_ERROR_LEVEL,
-                    "handlers": ["queue_listener"],
-                },
-                "saq": {
-                    "propagate": False,
-                    "level": settings.logging.SAQ_LEVEL,
-                    "handlers": ["queue_listener"],
-                },
                 "sqlalchemy.engine": {
                     "propagate": False,
                     "level": settings.logging.SQLALCHEMY_LEVEL,

@@ -18,6 +18,7 @@ class UserController(Controller):
     signature_namespace = {"UserService": UserService}
     path = "/users"
     return_dto = UserOutputDTO
+    tags = ["users endpoints"]
 
     @get("/{user_id:int}")
     async def get_user(
@@ -39,8 +40,7 @@ class UserController(Controller):
         self,
         service: UserService,
     ) -> OffsetPagination[StructUser]:
-        results, count = await service.list_and_count()
-        return service.to_schema(data=results, total=count, schema_type=StructUser)
+        return await service.get_users()
 
     @patch("/{user_id:int}")
     async def patch_user(

@@ -83,10 +83,9 @@ class LogSettings(CurrentEnvType):
     """
     OBFUSCATE_COOKIES: set[str] = {"session"}
     """Request cookie keys to obfuscate."""
-    OBFUSCATE_HEADERS: set[str] = {"Authorization", "X-API-KEY"}
-    """Request header keys to obfuscate."""
+    # OBFUSCATE_HEADERS: set[str] = {"Authorization", "X-API-KEY"}
+    # """Request header keys to obfuscate."""
 
-    WORKER_EVENT: str = "Worker"
     """Log event name for logs from SAQ worker."""
     SQLALCHEMY_LEVEL: int = 20
     """Level to log SQLAlchemy logs."""
