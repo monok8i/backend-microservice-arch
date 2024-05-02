@@ -89,7 +89,7 @@ def exception_to_http_response(
 
 
 class IntegrityException(HTTPException):
-    status_code = status_codes.HTTP_404_NOT_FOUND
+    status_code = status_codes.HTTP_409_CONFLICT
 
 
 class EmailValidationException(HTTPException, EmailNotValidError):
