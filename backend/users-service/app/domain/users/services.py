@@ -20,7 +20,7 @@ from advanced_alchemy.exceptions import (
 )
 
 from app.database.models import User, RefreshSession
-from app.domain.users.schemas import User as StructUser
+from app.domain.users.schemas import User as PydanticUser
 from app.domain.users.repositories import UserRepository, RefreshSessionRepository
 from app.lib.schemas import DataclassDictModel, PydanticDefaultsModel
 
@@ -70,9 +70,12 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
             raise NotFoundException(detail=f"No User found with {user_id=}")
         return user
 
-    async def get_users(self) -> OffsetPagination[User]:
+    async def get_users(self) -> OffsetPagination[PydanticUser]:
         results, count = await self.list_and_count()
-        return self.to_schema(data=results, total=count, schema_type=StructUser)
+        results = [
+            PydanticUser.model_validate(user, from_attributes=True) for user in results
+        ]
+        return self.to_schema(data=results, total=count)
 
     async def create(self, *, data: InputModelT) -> User:
         if is_dataclass(data):

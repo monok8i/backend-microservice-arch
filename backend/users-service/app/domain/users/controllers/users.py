@@ -10,7 +10,7 @@ from advanced_alchemy.service import OffsetPagination
 from app.database.models import User
 from app.domain.users.dependencies import provide_users_service
 from app.domain.users.services import UserService
-from app.domain.users.schemas import UserOutputDTO, UserCreate, UserUpdate, User as StructUser
+from app.domain.users.schemas import UserOutputDTO, UserCreate, UserUpdate, User as PydanticUser
 
 
 class UserController(Controller):
@@ -39,7 +39,7 @@ class UserController(Controller):
     async def get_users(
         self,
         service: UserService,
-    ) -> OffsetPagination[StructUser]:
+    ) -> OffsetPagination[PydanticUser]:
         return await service.get_users()
 
     @patch("/{user_id:int}")

@@ -15,7 +15,7 @@ UserOutputDTO = SQLAlchemyDTO[Annotated[User, base_user_config]]
 
 
 # @dataclass
-# class UserBase(BaseDataclassDictModel):
+# class UserBase(DataclassBaseDictModel):
 #     email: str
 #     password: str
 #     is_active: bool = field(default=True)
@@ -37,14 +37,14 @@ UserOutputDTO = SQLAlchemyDTO[Annotated[User, base_user_config]]
 #     """Data for put User (completely update)"""
 
 
-class User(CamelizedBaseStructModel):
-    """User properties to use for a response."""
+# class User(CamelizedBaseStructModel):
+#     """User properties to use for a response."""
 
-    id: int
-    email: str
-    is_superuser: bool = False
-    is_active: bool = True
-    is_activated: bool = False
+#     id: int
+#     email: str
+#     is_superuser: bool = False
+#     is_active: bool = True
+#     is_activated: bool = False
 
 class UserBase(PydanticDefaultsModel):
     email: Optional[EmailStr] = None
@@ -61,3 +61,7 @@ class UserCreate(UserBase):
 class UserUpdate(UserBase):
     email: Optional[EmailStr] = None
     password: Optional[str] = None
+
+
+class User(UserBase):
+    id: int
