@@ -1,11 +1,7 @@
 # poetry
 poetry.lock
 
-# env files
-.env.dev
-.env.test
-
 # alembic migration versions
-alembic/versions/
+app/database/migrations/versions/
 
 scripts/
