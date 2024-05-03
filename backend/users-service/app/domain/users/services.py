@@ -1,9 +1,9 @@
-from typing import Any, TypeVar, Dict, TypeAlias, Union
+from typing import Any, List, TypeVar, Dict, TypeAlias, Union
 
 from pydantic import BaseModel
 from dataclasses import is_dataclass, asdict, dataclass
 
-from pydantic import validate_email, EmailStr
+from pydantic import validate_email, EmailStr, TypeAdapter
 from email_validator import EmailNotValidError
 
 from litestar.exceptions import NotFoundException
@@ -72,10 +72,7 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
 
     async def get_users(self) -> OffsetPagination[PydanticUser]:
         results, count = await self.list_and_count()
-        results = [
-            PydanticUser.model_validate(user, from_attributes=True) for user in results
-        ]
-        return self.to_schema(data=results, total=count)
+        return self.to_schema(data=results, total=count, schema_type=PydanticUser)
 
     async def create(self, *, data: InputModelT) -> User:
         if is_dataclass(data):
