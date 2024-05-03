@@ -9,4 +9,3 @@ class UserRepository(SQLAlchemyAsyncRepository):
 
 class RefreshSessionRepository(SQLAlchemyAsyncRepository):
     model_type = RefreshSession
-

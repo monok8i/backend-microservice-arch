@@ -6,7 +6,7 @@ from dataclasses import is_dataclass, asdict, dataclass
 from pydantic import validate_email, EmailStr, TypeAdapter
 from email_validator import EmailNotValidError
 
-from litestar.exceptions import NotFoundException
+from litestar.exceptions import NotFoundException, HTTPException
 
 from sqlalchemy import Select, StatementLambdaElement
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,13 +20,13 @@ from advanced_alchemy.exceptions import (
 )
 
 from app.database.models import User, RefreshSession
-from app.domain.users.schemas import User as PydanticUser
+from app.domain.users.schemas import PydanticUser
 from app.domain.users.repositories import UserRepository, RefreshSessionRepository
-from app.lib.schemas import DataclassDictModel, PydanticDefaultsModel
 
+from app.lib.schemas import DataclassDictModel, PydanticDefaultsModel
 from app.lib.security import generate_hashed_password
 from app.lib.exceptions import IntegrityException, EmailValidationException
-from app.lib.utils import validate_default_fields
+from app.lib.utils import validate_default_pydantic_fields
 
 DataclassT = TypeVar("DataclassT", bound=dataclass)
 DataclassDictT = TypeVar("DataclassDictT", bound=DataclassDictModel)
@@ -72,7 +72,11 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
 
     async def get_users(self) -> OffsetPagination[PydanticUser]:
         results, count = await self.list_and_count()
-        return self.to_schema(data=results, total=count, schema_type=PydanticUser)
+        results: List[PydanticUser] = [
+            TypeAdapter(PydanticUser).validate_python(user, from_attributes=True)
+            for user in results
+        ]
+        return self.to_schema(data=results, total=count)
 
     async def create(self, *, data: InputModelT) -> User:
         if is_dataclass(data):
@@ -93,6 +97,8 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
                     raise IntegrityException(
                         detail=f"User with this email ({data.email}) already exists"
                     )
+                except Exception as ex:
+                    raise HTTPException(detail=f"{ex}")
             try:
                 name, email = validate_email(data.email)
                 _schema = asdict(data)
@@ -108,6 +114,8 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
                 raise IntegrityException(
                     detail=f"User with this email ({data.email}) already exists"
                 )
+            except Exception as ex:
+                raise HTTPException(detail=f"{ex}")
         if isinstance(data, BaseModel):
             try:
                 if not isinstance(data.email, EmailStr):
@@ -139,6 +147,8 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
                 raise IntegrityException(
                     detail=f"User with this email ({data.get('email')}) already exists"
                 )
+            except Exception as ex:
+                raise HTTPException(detail=f"{ex}")
 
     async def update(self, *, user_id: int, data: InputModelT) -> User:
         if is_dataclass(data):
@@ -158,6 +168,8 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
                     raise EmailValidationException(detail=f"{ex}")
                 except NotFoundError:
                     raise NotFoundException(detail=f"No User found with {user_id=}")
+                except Exception as ex:
+                    raise HTTPException(detail=f"{ex}")
             try:
                 _schema: dict = asdict(data)
                 if data.password:
@@ -173,6 +185,8 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
                 raise EmailValidationException(detail=f"{ex}")
             except NotFoundError:
                 raise NotFoundException(detail=f"No User found with {user_id=}")
+            except Exception as ex:
+                raise HTTPException(detail=f"{ex}")
         if isinstance(data, BaseModel):
             if issubclass(data.__class__, PydanticDefaultsModel):
                 try:
@@ -191,8 +205,10 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
                     raise EmailValidationException(detail=f"{ex}")
                 except NotFoundError:
                     raise NotFoundException(detail=f"No User found with {user_id=}")
+                except Exception as ex:
+                    raise HTTPException(detail=f"{ex}")
             try:
-                defaults = validate_default_fields(_class=data, data=data)
+                defaults = validate_default_pydantic_fields(_class=data, data=data)
                 _schema: dict = data.model_dump(exclude=defaults)
                 if password := _schema["password"]:
                     del _schema["password"]
@@ -207,6 +223,8 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
                 raise EmailValidationException(detail=f"{ex}")
             except NotFoundError:
                 raise NotFoundException(detail=f"No User found with {user_id=}")
+            except Exception as ex:
+                raise HTTPException(detail=f"{ex}")
         if isinstance(data, dict):
             try:
                 if password := data.get("password"):
@@ -221,6 +239,8 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
                 raise EmailValidationException(detail=f"{ex}")
             except NotFoundError:
                 raise NotFoundException(detail=f"No User found with {user_id=}")
+            except Exception as ex:
+                raise HTTPException(detail=f"{ex}")
 
 
 class RefreshSessionService(SQLAlchemyAsyncRepositoryService[RefreshSession]):

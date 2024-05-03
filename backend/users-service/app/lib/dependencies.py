@@ -7,6 +7,7 @@ from advanced_alchemy.filters import LimitOffset
 
 LIMIT_OFFSET_DEPENDENCY_KEY = "limit_offset"
 
+
 def provide_limit_offset_filter(
     limit: int = Parameter(ge=1, query="limit", default=1, required=False),
     offset: int = Parameter(
@@ -31,4 +32,8 @@ def provide_limit_offset_filter(
 
 
 def provide_dependencies() -> Dict[str, Provide]:
-    return {LIMIT_OFFSET_DEPENDENCY_KEY: Provide(provide_limit_offset_filter, sync_to_thread=False)}
+    return {
+        LIMIT_OFFSET_DEPENDENCY_KEY: Provide(
+            provide_limit_offset_filter, sync_to_thread=False
+        )
+    }

@@ -10,7 +10,12 @@ from advanced_alchemy.service import OffsetPagination
 from app.database.models import User
 from app.domain.users.dependencies import provide_users_service
 from app.domain.users.services import UserService
-from app.domain.users.schemas import UserOutputDTO, UserCreate, UserUpdate, User as PydanticUser
+from app.domain.users.schemas import (
+    UserOutputDTO,
+    PydanticUserCreate,
+    PydanticUserUpdate,
+    PydanticUser,
+)
 
 
 class UserController(Controller):
@@ -32,7 +37,9 @@ class UserController(Controller):
         return await service.get(user_id=user_id)
 
     @post("/")
-    async def create_user(self, service: UserService, *, data: UserCreate) -> User:
+    async def create_user(
+        self, service: UserService, *, data: PydanticUserCreate
+    ) -> User:
         return await service.create(data=data)
 
     @get("/", return_dto=None)
@@ -50,7 +57,7 @@ class UserController(Controller):
             int,
             Parameter(title="User ID", description="Get user with specific identifier"),
         ],
-        data: UserUpdate,
+        data: PydanticUserUpdate,
     ) -> User:
         return await service.update(user_id=user_id, data=data)
 
@@ -62,7 +69,7 @@ class UserController(Controller):
             int,
             Parameter(title="User ID", description="Get user with specific identifier"),
         ],
-        data: UserUpdate,
+        data: PydanticUserUpdate,
     ) -> User:
         return await service.update(user_id=user_id, data=data)
 

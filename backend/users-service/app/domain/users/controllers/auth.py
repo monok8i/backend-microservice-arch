@@ -1,4 +1,4 @@
 from litestar.controller import Controller
 
-class AuthController(Controller):
-    ...
+
+class AuthController(Controller): ...

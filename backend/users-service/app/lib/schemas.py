@@ -13,16 +13,8 @@ class DataclassDictModel:
     def to_dict(
         cls,
         exclude: List[str] | Tuple[str] | Set[str] = None,
-        with_values: bool = False,
     ) -> Dict[str, Any] | Tuple[Dict[str, Any], int]:
         if exclude:
-            if with_values:
-                data = asdict(cls)
-                excluded = []
-                for key in exclude:
-                    if key in data.keys():
-                        excluded.append(data.pop(key, None))
-                return data, excluded
             data = asdict(cls)
             for key in exclude:
                 if key in data.keys():

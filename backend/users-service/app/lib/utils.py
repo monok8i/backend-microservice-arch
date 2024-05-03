@@ -3,7 +3,9 @@ from typing import Any
 from pydantic import BaseModel
 
 
-def validate_default_fields(*, _class: BaseModel, data: dict[str, Any] | BaseModel) -> set[str]:
+def validate_default_pydantic_fields(
+    *, _class: BaseModel, data: dict[str, Any] | BaseModel
+) -> set[str]:
     defaults = set()
     if isinstance(data, dict):
         for key, value in data.items():

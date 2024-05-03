@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
 from sqlalchemy import TIMESTAMP, Integer, func
 from sqlalchemy.ext.asyncio import AsyncAttrs
