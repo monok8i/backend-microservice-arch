@@ -3,7 +3,7 @@ from typing import Any, Tuple, List, Self, Set, Dict
 
 from dataclasses import dataclass, asdict, is_dataclass
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 @dataclass
@@ -50,7 +50,13 @@ class Message(CamelizedBaseStructModel):
 
 class PydanticDefaultsModel(BaseModel):
     """"""
-
+    model_config = ConfigDict(
+        validate_assignment=True,
+        from_attributes=True,
+        use_enum_values=True,
+        arbitrary_types_allowed=True,
+    )
+    
     def validate_into_defaults(cls, data: dict[str, Any] | BaseModel) -> set[str]:
         defaults = set()
         if isinstance(data, dict):

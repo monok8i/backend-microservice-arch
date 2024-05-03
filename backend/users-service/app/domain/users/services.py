@@ -72,11 +72,7 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
 
     async def get_users(self) -> OffsetPagination[PydanticUser]:
         results, count = await self.list_and_count()
-        results: List[PydanticUser] = [
-            TypeAdapter(PydanticUser).validate_python(user, from_attributes=True)
-            for user in results
-        ]
-        return self.to_schema(data=results, total=count)
+        return self.to_schema(data=results, total=count, schema_type=PydanticUser)
 
     async def create(self, *, data: InputModelT) -> User:
         if is_dataclass(data):
