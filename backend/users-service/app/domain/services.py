@@ -152,7 +152,6 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
                 try:
                     defaults = validate_default_dataclass_fields(_class=data, data=data)
                     _schema: dict = data.to_dict(exclude=defaults)
-                    print(defaults, "------------------------------------d")
                     if data.password:
                         password = _schema.pop("password", None)
                         _schema.update(

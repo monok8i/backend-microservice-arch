@@ -15,7 +15,7 @@ from app.domain.schemas import (
     PydanticUserCreate,
     PydanticUserUpdate,
     PydanticUser,
-    DataclassUserPatch
+    DataclassUserUpdate,
 )
 
 
@@ -32,7 +32,11 @@ class UserController(Controller):
         service: UserService,
         user_id: Annotated[
             int,
-            Parameter(title="User ID", description="Get user with specific identifier", required=True),
+            Parameter(
+                title="User ID",
+                description="Get user with specific identifier",
+                required=True,
+            ),
         ],
     ) -> User:
         return await service.get(user_id=user_id)
@@ -58,7 +62,7 @@ class UserController(Controller):
             int,
             Parameter(title="User ID", description="Get user with specific identifier"),
         ],
-        data: DataclassUserPatch,
+        data: DataclassUserUpdate,
     ) -> User:
         return await service.update(user_id=user_id, data=data)
 

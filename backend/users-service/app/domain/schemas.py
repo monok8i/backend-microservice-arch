@@ -29,13 +29,8 @@ class DataclassUserCreate(DataclassBaseUser):
 
 
 @dataclass
-class DataclassUserPatch(DataclassBaseUser):
+class DataclassUserUpdate(DataclassBaseUser):
     """Data for patch User (partial update)"""
-
-
-@dataclass
-class DataclassUserPut(DataclassBaseUser):
-    """Data for put User (completely update)"""
 
 
 @dataclass

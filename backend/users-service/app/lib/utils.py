@@ -46,12 +46,4 @@ def validate_default_dataclass_fields(
                 if value == _fields.get(key):
                     defaults.add(key)
     return defaults
-
-@dataclass
-class T:
-    a: int
-    b: int = 2
-    c: str = "s"
-
-print(validate_default_dataclass_fields(_class=T(a=1), data={"a": 1, "b": 2, "c": "s"}))
     
