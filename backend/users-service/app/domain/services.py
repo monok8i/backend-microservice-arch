@@ -1,9 +1,9 @@
-from typing import Any, List, TypeVar, Dict, TypeAlias, Union
+from typing import Any, TypeVar, Dict, TypeAlias, Union
 
 from pydantic import BaseModel
 from dataclasses import is_dataclass, asdict, dataclass
 
-from pydantic import validate_email, EmailStr, TypeAdapter
+from pydantic import validate_email, EmailStr
 from email_validator import EmailNotValidError
 
 from litestar.exceptions import NotFoundException, HTTPException
@@ -20,8 +20,8 @@ from advanced_alchemy.exceptions import (
 )
 
 from app.database.models import User, RefreshSession
-from app.domain.users.schemas import PydanticUser
-from app.domain.users.repositories import UserRepository, RefreshSessionRepository
+from app.domain.schemas import PydanticUser
+from app.domain.repositories import UserRepository, RefreshSessionRepository
 
 from app.lib.schemas import DataclassDictModel, PydanticDefaultsModel
 from app.lib.security import generate_hashed_password

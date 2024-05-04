@@ -81,8 +81,8 @@ class LogSettings(CurrentEnvType):
 
     Only emit logs at this level, or higher.
     """
-    OBFUSCATE_COOKIES: set[str] = {"session"}
-    """Request cookie keys to obfuscate."""
+    # OBFUSCATE_COOKIES: set[str] = {"session"}
+    # """Request cookie keys to obfuscate."""
     # OBFUSCATE_HEADERS: set[str] = {"Authorization", "X-API-KEY"}
     # """Request header keys to obfuscate."""
 

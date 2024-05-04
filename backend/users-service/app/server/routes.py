@@ -1,4 +1,4 @@
-from app.domain.users.controllers import UserController
+from app.domain.controllers import UserController
 
 from litestar.types import ControllerRouterHandler
 
