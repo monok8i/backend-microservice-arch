@@ -16,8 +16,8 @@ UserOutputDTO = SQLAlchemyDTO[Annotated[User, base_user_config]]
 
 @dataclass(kw_only=True)
 class DataclassBaseUser(DataclassDictModel):
-    email: str
-    password: str
+    email: str = field(default=None)
+    password: str = field(default=None)
     is_active: bool = field(default=True)
     is_superuser: bool = field(default=False)
     is_activated: bool = field(default=False)

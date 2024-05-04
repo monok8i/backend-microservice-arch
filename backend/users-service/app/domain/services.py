@@ -26,7 +26,7 @@ from app.domain.repositories import UserRepository, RefreshSessionRepository
 from app.lib.schemas import DataclassDictModel, PydanticDefaultsModel
 from app.lib.security import generate_hashed_password
 from app.lib.exceptions import IntegrityException, EmailValidationException
-from app.lib.utils import validate_default_pydantic_fields
+from app.lib.utils import validate_default_pydantic_fields, validate_default_dataclass_fields
 
 DataclassT = TypeVar("DataclassT", bound=dataclass)
 DataclassDictT = TypeVar("DataclassDictT", bound=DataclassDictModel)
@@ -150,7 +150,9 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
         if is_dataclass(data):
             if issubclass(data.__class__, DataclassDictModel):
                 try:
-                    _schema: dict = data.to_dict()
+                    defaults = validate_default_dataclass_fields(_class=data, data=data)
+                    _schema: dict = data.to_dict(exclude=defaults)
+                    print(defaults, "------------------------------------d")
                     if data.password:
                         password = _schema.pop("password", None)
                         _schema.update(
@@ -167,7 +169,11 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
                 except Exception as ex:
                     raise HTTPException(detail=f"{ex}")
             try:
+                defaults = validate_default_dataclass_fields(_class=data, data=data)
                 _schema: dict = asdict(data)
+                for key in _schema.keys():
+                    if key in defaults:
+                        del _schema[key]
                 if data.password:
                     password = _schema.pop("password", None)
                     _schema.update(
