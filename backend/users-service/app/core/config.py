@@ -4,6 +4,7 @@ from litestar.plugins.sqlalchemy import (
     AsyncSessionConfig,
     SQLAlchemyAsyncConfig,
 )
+from litestar.config.response_cache import ResponseCacheConfig
 from litestar.plugins.structlog import StructlogConfig
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
 from litestar.middleware.logging import LoggingMiddlewareConfig
@@ -32,6 +33,7 @@ alchemy_config = SQLAlchemyAsyncConfig(
     session_config=AsyncSessionConfig(expire_on_commit=False),
 )
 
+cache_config = ResponseCacheConfig(store=settings.redis.store)
 
 log_config = StructlogConfig(
     structlog_logging_config=StructLoggingConfig(

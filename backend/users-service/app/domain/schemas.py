@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated, Optional
 from dataclasses import dataclass, field
 
@@ -68,3 +69,5 @@ class PydanticUserUpdate(PydanticBaseUser):
 
 class PydanticUser(PydanticBaseUser):
     id: int
+    created_at: datetime
+    updated_at: datetime

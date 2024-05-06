@@ -1,8 +1,12 @@
 from typing import Optional
 
+from redis.asyncio import Redis
+from litestar.stores.redis import RedisStore
+
 from pydantic import PostgresDsn, field_validator
 from pydantic_core.core_schema import FieldValidationInfo
 
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from .env_type import CurrentEnvType
@@ -95,6 +99,46 @@ class LogSettings(CurrentEnvType):
     """Level to log uvicorn error logs."""
 
 
+class RedisSettings(CurrentEnvType):
+    # REDIS_USER: Optional[str] = "default"
+    # REDIS_PASSWORD: str
+    # REDIS_HOST: str
+    # REDIS_PORT: int
+    # REDIS_URI: Optional[str] = None
+
+    REDIS_URL: str
+
+    _instance: Redis | None = None
+    _store: RedisStore | None = None
+
+    @property
+    def instance(self) -> Redis:
+        self._instance = RedisStore.with_client(url=self.REDIS_URL)._redis
+        return self._instance
+
+    @property
+    def store(self) -> RedisStore:
+        self._store = RedisStore(redis=self.instance, namespace="users")
+        return self._store
+
+    # @field_validator("REDIS_URI", mode="before")
+    # def assemble_db_connection(
+    #     cls,  # noqa: N805
+    #     v: Optional[str],
+    #     info: FieldValidationInfo,
+    # ) -> Any:
+    #     if isinstance(v, str):
+    #         return v
+    #     return str(
+    #         RedisDsn.build(
+    #             scheme="redis",
+    #             host=info.data.get("REDIS_HOST"),
+    #             port=info.data.get("REDIS_PORT"),
+    #         )
+    #     )
+
+
+
 class TestSettings(CurrentEnvType):
     @property
     def database(self) -> Database:
@@ -103,3 +147,8 @@ class TestSettings(CurrentEnvType):
     @property
     def logging(self) -> LogSettings:
         return LogSettings()
+
+    @property
+    def redis(self) -> RedisSettings:
+        return RedisSettings()
+    

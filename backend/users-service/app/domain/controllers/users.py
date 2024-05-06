@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from litestar import delete, get, post, patch, put
-from litestar.params import Parameter
+from litestar.params import Parameter, Body
 from litestar.controller import Controller
 from litestar.di import Provide
 
@@ -15,7 +15,6 @@ from app.domain.schemas import (
     PydanticUserCreate,
     PydanticUserUpdate,
     PydanticUser,
-    # ,
 )
 
 
@@ -26,7 +25,7 @@ class UserController(Controller):
     return_dto = UserOutputDTO
     tags = ["users endpoints"]
 
-    @get("/{user_id:int}")
+    @get("/{user_id:int}", cache=True)
     async def get_user(
         self,
         service: UserService,
@@ -43,11 +42,20 @@ class UserController(Controller):
 
     @post("/")
     async def create_user(
-        self, service: UserService, *, data: PydanticUserCreate
+        self,
+        service: UserService,
+        *,
+        data: Annotated[
+            PydanticUserCreate,
+            Body(
+                title="Create user data",
+                description="Data for creating new user in system",
+            ),
+        ],
     ) -> User:
         return await service.create(data=data)
 
-    @get("/", return_dto=None)
+    @get("/", return_dto=None, cache=True)
     async def get_users(
         self,
         service: UserService,
@@ -62,7 +70,13 @@ class UserController(Controller):
             int,
             Parameter(title="User ID", description="Get user with specific identifier"),
         ],
-        data: PydanticUserUpdate,
+        data: Annotated[
+            PydanticUserUpdate,
+            Body(
+                title="User Update data",
+                description="Data for partitialy updating user in system",
+            ),
+        ],
     ) -> User:
         return await service.update(user_id=user_id, data=data)
 
@@ -73,8 +87,14 @@ class UserController(Controller):
         user_id: Annotated[
             int,
             Parameter(title="User ID", description="Get user with specific identifier"),
+        ],  
+        data: Annotated[
+            PydanticUserUpdate,
+            Body(
+                title="User Update data",
+                description="Data for completely updating user in system",
+            ),
         ],
-        data: PydanticUserUpdate,
     ) -> User:
         return await service.update(user_id=user_id, data=data)
 
