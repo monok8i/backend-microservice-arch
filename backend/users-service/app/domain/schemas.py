@@ -7,15 +7,15 @@ from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.config import DTOConfig
 
 from app.database.models import User
-from app.lib.schemas import CamelizedBaseStructModel, DataclassDictModel
-from app.lib.schemas import PydanticDefaultsModel
+from app.lib.schemas import CamelizedBaseStructModel
+from app.lib.schemas import PydanticBaseModel
 
 base_user_config = DTOConfig(exclude=("hashed_password", "refresh_session"))
 UserOutputDTO = SQLAlchemyDTO[Annotated[User, base_user_config]]
 
 
 @dataclass(kw_only=True)
-class DataclassBaseUser(DataclassDictModel):
+class DataclassBaseUser:
     email: str = field(default=None)
     password: str = field(default=None)
     is_active: bool = field(default=True)
@@ -49,7 +49,7 @@ class StructUser(SctructBaseUser):
     id: int = None
 
 
-class PydanticBaseUser(PydanticDefaultsModel):
+class PydanticBaseUser(PydanticBaseModel):
     email: Optional[EmailStr] = None
     is_active: Optional[bool] = True
     is_superuser: bool = False
