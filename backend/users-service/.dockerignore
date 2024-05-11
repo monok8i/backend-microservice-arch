@@ -90,3 +90,6 @@ venv/
 
 # VS Code
 .vscode/
+
+# Poetry
+poetry.lock

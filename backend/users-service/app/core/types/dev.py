@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
@@ -95,6 +96,16 @@ class LogSettings(CurrentEnvType):
     """Level to log uvicorn error logs."""
 
 
+class AuthenticationSettings(CurrentEnvType):
+    KEY_HEADER: str = "Authorization"
+    TOKEN_TYPE: str = "bearer"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 5
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
+    JWT_PRIVATE_PATH: Path
+    JWT_PUBLIC_PATH: Path
+    ALGORITHM: str = "RS256"
+
+
 class DevSettings(CurrentEnvType):
     @property
     def database(self) -> DatabaseSettings:
@@ -103,3 +114,7 @@ class DevSettings(CurrentEnvType):
     @property
     def logging(self) -> LogSettings:
         return LogSettings()
+    
+    @property
+    def auth(self) -> AuthenticationSettings:
+        return AuthenticationSettings()

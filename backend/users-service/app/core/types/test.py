@@ -6,7 +6,6 @@ from litestar.stores.redis import RedisStore
 from pydantic import PostgresDsn, field_validator
 from pydantic_core.core_schema import FieldValidationInfo
 
-from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from .env_type import CurrentEnvType

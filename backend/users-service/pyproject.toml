@@ -17,6 +17,7 @@ bcrypt = "^4.1.2"
 litestar = {extras = ["standart"], version = "^2.8.2"}
 advanced-alchemy = "0.9.0"
 redis = "^5.0.4"
+pyjwt = {extras = ["crypto"], version = "^2.8.0"}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.4.1"
