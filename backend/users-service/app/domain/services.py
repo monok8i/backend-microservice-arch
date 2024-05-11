@@ -22,7 +22,7 @@ from advanced_alchemy.exceptions import (
 from app.database.models import User, RefreshSession
 from app.domain.schemas import PydanticUser
 from app.domain.repositories import UserRepository, RefreshSessionRepository
-from app.lib.security.security import generate_hashed_password
+from app.lib.security.crypt import generate_hashed_password
 from app.lib.exceptions import IntegrityException, EmailValidationException
 
 
