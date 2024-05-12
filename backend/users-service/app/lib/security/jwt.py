@@ -70,7 +70,8 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         token = decode_jwt_token(token_header_value=auth_header)
         token_payload = dict(**token)
 
-        db_session = alchemy_config.provide_session(connection.app.state, connection.scope)
+        db_session = cast("AsyncSession", alchemy_config.provide_session(connection.app.state, connection.scope))
+        
         async with db_session as async_session:
             async with async_session.begin():
                 user = await async_session.execute(select(User).where(User.id == int(token_payload.get("sub"))))
