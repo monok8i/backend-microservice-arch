@@ -9,20 +9,11 @@ from litestar.plugins.structlog import StructlogConfig
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
 from litestar.middleware.logging import LoggingMiddlewareConfig
 
-from .types.dev import DevSettings
-from .types.env_type import CurrentEnvType, EnvType
-from .types.test import TestSettings
-
-settings_dict = {
-    EnvType.dev: DevSettings,
-    EnvType.test: TestSettings,
-}
+from .base import Settings
 
 
-def get_settings() -> DevSettings | TestSettings:
-    env_type = CurrentEnvType().env_type
-
-    return settings_dict[env_type]()
+def get_settings() -> Settings:
+    return Settings()
 
 
 settings = get_settings()

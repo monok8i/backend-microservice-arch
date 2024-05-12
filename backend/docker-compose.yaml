@@ -1,0 +1,99 @@
+version: "3.8"
+
+services:
+  users-service:
+    image: litestar-users-service:latest
+    container_name: litestar-users
+    build:
+      context: ./users-service/
+      dockerfile: Dockerfile
+    develop:
+      watch:
+        - action: sync
+          path: ./users-service/
+          target: ./app/
+    ports:
+      - "80:80"
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - backend
+
+  postgres:
+    container_name: litestar-users-db
+    image: postgres:16-alpine
+    restart: always
+    env_file: ./.env
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    expose:
+      - "${POSTGRES_PORT}"
+    volumes:
+      - ./postgres/docker-entrypoint.sh:/docker-entrypoint-initdb.d/docker-entrypoint.sh
+    networks:
+      - backend
+
+  redis:
+    image: redis:latest
+    container_name: litestar-users-cache
+    restart: always
+    env_file: ./.env
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    expose:
+      - "${REDIS_PORT}"
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - backend
+
+  #  nginx:
+  #    image: nginx:latest
+  #    container_name: proxy
+  #    restart: always
+  #    ports:
+  #      - "80:80"
+  #    volumes:
+  #      - ../nginx/nginx.conf:/etc/nginx/nginx.conf
+  #    networks:
+  #      - backend
+
+  # rabbitmq:
+  #   image: rabbitmq:3-management-alpine
+  #   container_name: broker
+  #   ports:
+  #     - 5672:5672
+  #     - 15672:15672
+  #   volumes:
+  #     - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+  #     # - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+  #     - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
+  #   networks:
+  #     - backend
+
+  # email_service:
+  #   image: email-service:latest
+  #   container_name: email-service
+  #   build:
+  #     context: ./email-service/
+  #     dockerfile: Dockerfile
+  #   develop:
+  #     watch:
+  #       - action: sync
+  #         path: ./email-service/
+  #         target: ./app/
+  #   ports:
+  #     - "50:50"
+  #   restart: always
+  #   depends_on:
+  #     - rabbitmq
+  #   networks:
+  #     - backend
+
+networks:
+  backend:
+    name: backend
+    driver: bridge

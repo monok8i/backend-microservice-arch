@@ -2,9 +2,9 @@ date = $(shell date)
 
 .PHONY: migration
 migration:
-	alembic revision --autogenerate -m "Revision ($(date))"
+	poetry run alembic -c ./app/database/migrations/alembic.ini revision --autogenerate -m "Revision ($(date))"
 
 
 .PHONY: migrate
 migrate:
-	alembic upgrade head
+	poetry run alembic -c ./app/database/migrations/alembic.ini upgrade head

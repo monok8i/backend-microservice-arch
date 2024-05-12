@@ -1,4 +1,7 @@
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 from pathlib import Path
+
 from typing import Optional
 
 from redis.asyncio import Redis
@@ -9,7 +12,9 @@ from pydantic_core.core_schema import FieldValidationInfo
 
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
-from .env_type import CurrentEnvType
+
+class CurrentEnvType(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 
 class Database(CurrentEnvType):
@@ -32,8 +37,8 @@ class Database(CurrentEnvType):
 
     ENGINE: Optional[AsyncEngine] = None
 
-    MIGRATIONS_CONFIG: str = "app/database/migrations/alembic.ini"
-    MIGRATIONS_PATH: str = "app/database/migrations"
+    # MIGRATIONS_CONFIG: str = "app/database/migrations/alembic.ini"
+    # MIGRATIONS_PATH: str = "app/database/migrations"
 
     @field_validator("POSTGRES_DATABASE_URI", mode="before")
     def assemble_db_connection(
@@ -100,11 +105,6 @@ class LogSettings(CurrentEnvType):
 
 
 class RedisSettings(CurrentEnvType):
-    # REDIS_USER: Optional[str] = "default"
-    # REDIS_PASSWORD: str
-    # REDIS_HOST: str
-    # REDIS_PORT: int
-    # REDIS_URI: Optional[str] = None
 
     REDIS_URL: str
 
@@ -148,7 +148,7 @@ class AuthenticationSettings(CurrentEnvType):
     ALGORITHM: str = "RS256"
 
 
-class TestSettings(CurrentEnvType):
+class Settings:
     @property
     def database(self) -> Database:
         return Database()
@@ -160,8 +160,7 @@ class TestSettings(CurrentEnvType):
     @property
     def redis(self) -> RedisSettings:
         return RedisSettings()
-    
+
     @property
     def auth(self) -> AuthenticationSettings:
         return AuthenticationSettings()
-    

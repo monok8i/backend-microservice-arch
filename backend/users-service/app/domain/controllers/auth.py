@@ -14,6 +14,7 @@ class AuthController(Controller):
     #     return_dto = UserOutputDTO
     #     tags = ["users endpoints"]
     path = "/auth"
+    tags = ["auth"]
 
     @post("/token")
     async def jwt_token(

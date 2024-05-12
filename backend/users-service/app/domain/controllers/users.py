@@ -23,7 +23,7 @@ class UserController(Controller):
     signature_namespace = {"UserService": UserService}
     path = "/users"
     return_dto = UserOutputDTO
-    tags = ["users endpoints"]
+    tags = ["users"]
 
     # @get("/me", dependencies={"current_user": CurrentUser})
     # async def get_me(self, current_user: User) -> User:
