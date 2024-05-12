@@ -19,7 +19,7 @@ services:
       - postgres
       - redis
     networks:
-      - backend
+      - backend-network
 
   postgres:
     container_name: litestar-users-db
@@ -33,7 +33,7 @@ services:
     volumes:
       - ./postgres/docker-entrypoint.sh:/docker-entrypoint-initdb.d/docker-entrypoint.sh
     networks:
-      - backend
+      - backend-network
 
   redis:
     image: redis:latest
@@ -44,11 +44,11 @@ services:
       - "${REDIS_PORT}:${REDIS_PORT}"
     expose:
       - "${REDIS_PORT}"
-    volumes:
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: redis-server /usr/local/etc/redis/redis.conf
+    # volumes:
+    #   - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server
     networks:
-      - backend
+      - backend-network
 
   #  nginx:
   #    image: nginx:latest
@@ -94,6 +94,6 @@ services:
   #     - backend
 
 networks:
-  backend:
-    name: backend
+  backend-network:
+    name: backend-network
     driver: bridge

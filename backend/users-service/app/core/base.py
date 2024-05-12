@@ -105,7 +105,6 @@ class LogSettings(CurrentEnvType):
 
 
 class RedisSettings(CurrentEnvType):
-
     REDIS_URL: str
 
     _instance: Redis | None = None
@@ -148,7 +147,7 @@ class AuthenticationSettings(CurrentEnvType):
     ALGORITHM: str = "RS256"
 
 
-class Settings:
+class Settings(CurrentEnvType):
     @property
     def database(self) -> Database:
         return Database()
