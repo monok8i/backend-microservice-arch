@@ -15,6 +15,5 @@ def create_app() -> Litestar:
         route_handlers=route_handlers,
         plugins=[sqlalchemy_plugin, structlog_plugin],
         middleware=[auth_middleware],
-        on_app_init=[sqlalchemy_plugin.on_app_init]
     )
 

@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.models import User
 from app.core import settings
+from app.core.config import alchemy_config
 
 from litestar.connection import ASGIConnection
 from litestar.exceptions import NotAuthorizedException
@@ -69,10 +70,10 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         token = decode_jwt_token(token_header_value=auth_header)
         token_payload = dict(**token)
 
-        db_session = cast("AsyncSession", connection.app.dependencies.get("db_session"))
+        db_session = alchemy_config.provide_session(connection.app.state, connection.scope)
         async with db_session as async_session:
             async with async_session.begin():
-                user = await async_session.execute(select(User).where(User.id == token_payload.get("sub")))
+                user = await async_session.execute(select(User).where(User.id == int(token_payload.get("sub"))))
         if not user:
             raise NotAuthorizedException()
         return AuthenticationResult(user=user, auth=token)
