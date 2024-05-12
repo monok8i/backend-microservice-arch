@@ -3,5 +3,3 @@ poetry.lock
 
 # alembic migration versions
 app/database/migrations/versions/
-
-scripts/

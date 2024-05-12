@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Optional
 
 from redis.asyncio import Redis
@@ -137,6 +138,15 @@ class RedisSettings(CurrentEnvType):
     #     )
 
 
+class AuthenticationSettings(CurrentEnvType):
+    KEY_HEADER: str = "Authorization"
+    TOKEN_TYPE: str = "bearer"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 5
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
+    JWT_PRIVATE_KEY_PATH: Path
+    JWT_PUBLIC_KEY_PATH: Path
+    ALGORITHM: str = "RS256"
+
 
 class TestSettings(CurrentEnvType):
     @property
@@ -150,4 +160,8 @@ class TestSettings(CurrentEnvType):
     @property
     def redis(self) -> RedisSettings:
         return RedisSettings()
+    
+    @property
+    def auth(self) -> AuthenticationSettings:
+        return AuthenticationSettings()
     

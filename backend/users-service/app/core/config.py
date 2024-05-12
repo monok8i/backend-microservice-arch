@@ -28,7 +28,7 @@ def get_settings() -> DevSettings | TestSettings:
 settings = get_settings()
 
 alchemy_config = SQLAlchemyAsyncConfig(
-    session_dependency_key="session",
+    session_dependency_key="db_session",
     engine_instance=settings.database.ENGINE,
     session_config=AsyncSessionConfig(expire_on_commit=False),
 )

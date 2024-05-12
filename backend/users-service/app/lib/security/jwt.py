@@ -22,9 +22,8 @@ API_KEY_HEADER = settings.auth.KEY_HEADER
 
 
 def encode_jwt_token(
-    cls,
     subject: Union[str, Any],
-    private_key: str = settings.auth.JWT_PRIVATE_PATH.read_text(),
+    private_key: str = settings.auth.JWT_PRIVATE_KEY_PATH.read_text(),
     algorithm: str = settings.auth.ALGORITHM,
     *,
     expires: timedelta | None = None,
@@ -46,9 +45,8 @@ def encode_jwt_token(
 
 
 def decode_jwt_token(
-    cls,
     token_header_value: str,
-    public_key: str = settings.auth.JWT_PUBLIC_PATH.read_text(),
+    public_key: str = settings.auth.JWT_PUBLIC_KEY_PATH.read_text(),
     algorithm: str = settings.auth.ALGORITHM,
 ) -> Any:
     token_type, token_value = get_authorization_scheme_param(token_header_value)
@@ -61,7 +59,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
     async def authenticate_request(
         self, connection: ASGIConnection
     ) -> AuthenticationResult:
-
+        
         # retrieve the auth header
         auth_header = connection.headers.get(API_KEY_HEADER)
         if not auth_header:
@@ -69,13 +67,12 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
 
         # decode the token, the result is a ``Token`` model instance
         token = decode_jwt_token(token_header_value=auth_header)
+        token_payload = dict(**token)
 
-        session = cast("AsyncSession", connection.app.dependencies.get("session"))
-        async with session as async_session:
+        db_session = cast("AsyncSession", connection.app.dependencies.get("db_session"))
+        async with db_session as async_session:
             async with async_session.begin():
-                user = await async_session.execute(
-                    select(User).where(User.id == token.sub)
-                )
+                user = await async_session.execute(select(User).where(User.id == token_payload.get("sub")))
         if not user:
             raise NotAuthorizedException()
         return AuthenticationResult(user=user, auth=token)

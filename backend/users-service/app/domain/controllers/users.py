@@ -8,7 +8,7 @@ from litestar.di import Provide
 from advanced_alchemy.service import OffsetPagination
 
 from app.database.models import User
-from app.domain.dependencies import provide_users_service
+from app.domain.dependencies import provide_users_service# , CurrentUser
 from app.domain.services import UserService
 from app.domain.schemas import (
     UserOutputDTO,
@@ -24,6 +24,11 @@ class UserController(Controller):
     path = "/users"
     return_dto = UserOutputDTO
     tags = ["users endpoints"]
+
+    # @get("/me", dependencies={"current_user": CurrentUser})
+    # async def get_me(self, current_user: User) -> User:
+    #     return current_user
+
 
     @get("/{user_id:int}", cache=True)
     async def get_user(

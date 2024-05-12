@@ -101,8 +101,8 @@ class AuthenticationSettings(CurrentEnvType):
     TOKEN_TYPE: str = "bearer"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 5
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
-    JWT_PRIVATE_PATH: Path
-    JWT_PUBLIC_PATH: Path
+    JWT_PRIVATE_KEY_PATH: Path
+    JWT_PUBLIC_KEY_PATH: Path
     ALGORITHM: str = "RS256"
 
 

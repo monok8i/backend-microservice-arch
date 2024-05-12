@@ -71,3 +71,8 @@ class PydanticUser(PydanticBaseUser):
     id: int
     created_at: datetime
     updated_at: datetime
+
+
+class Token(PydanticBaseModel):
+    token: str
+    token_type: str
