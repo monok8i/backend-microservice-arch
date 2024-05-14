@@ -1,17 +1,19 @@
 current_time := $(shell date '+%Y-%m-%d %H:%M:%S')
+dc = docker compose
+dc_yaml = ./docker-compose.yaml
 
 .PHONY: app
 app:
-	docker compose -f ./docker-compose.yaml up -d
+	${dc} -f ${dc_yaml} up -d
 
-.PHONY: watch
-watch:
-	docker compose -f ./docker-compose.yaml watch
+.PHONY: build
+build:
+	${dc} -f ${dc_yaml} up --build
 
 .PHONY: stop-all
 stop-all:
-	docker compose -f ./docker-compose.yaml stop
+	${dc} -f ${dc_yaml} stop
 
 .PHONY: drop-all
 drop-all:
-	docker compose -f ./docker-compose.yaml down
+	${dc} -f ${dc_yaml} down

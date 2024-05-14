@@ -8,7 +8,7 @@ from litestar.di import Provide
 from advanced_alchemy.service import OffsetPagination
 
 from app.database.models import User
-from app.domain.dependencies import provide_users_service# , CurrentUser
+from app.domain.dependencies import provide_users_service  # , CurrentUser
 from app.domain.services import UserService
 from app.domain.schemas import (
     UserOutputDTO,
@@ -92,7 +92,7 @@ class UserController(Controller):
         user_id: Annotated[
             int,
             Parameter(title="User ID", description="Get user with specific identifier"),
-        ],  
+        ],
         data: Annotated[
             PydanticUserUpdate,
             Body(

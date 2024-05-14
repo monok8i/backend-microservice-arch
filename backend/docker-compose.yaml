@@ -14,6 +14,8 @@ services:
           target: ./app/
     ports:
       - "80:80"
+    volumes:
+      - ./users-service/app/:/service/app/
     restart: always
     depends_on:
       - postgres
