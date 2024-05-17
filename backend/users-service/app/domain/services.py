@@ -20,9 +20,9 @@ from advanced_alchemy.exceptions import (
 )
 
 from app.database.models import User, RefreshSession
-from app.domain.schemas import PydanticUser
 from app.domain.repositories import UserRepository, RefreshSessionRepository
-from app.lib.security.crypt import generate_hashed_password
+from app.domain.schemas import PydanticUser
+from app.lib.security.crypt import generate_hashed_password, verify_password
 from app.lib.exceptions import IntegrityException, EmailValidationException
 
 
@@ -122,6 +122,26 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
         except Exception as ex:
             raise HTTPException(detail=f"{ex}")
 
+    async def authenticate(self, data: InputModelT) -> User:
+        try:
+            if is_dataclass(data):
+                _schema: dict[str, Any] = asdict(data)
+            if isinstance(data, BaseModel):
+                _schema: dict[str, Any] = data.model_dump()
+            if isinstance(data, dict):
+                _schema: dict[str, Any] = data
+
+            user = await self.get_one_or_none(email=_schema["username"])
+
+            if not user or not verify_password(
+                _schema["password"], user.hashed_password
+            ):
+                raise NotFoundException(detail="Invalid user email or password")
+
+            return user
+        except Exception as ex:
+            raise HTTPException(detail=f"{ex}")
+
 
 class RefreshSessionService(SQLAlchemyAsyncRepositoryService[RefreshSession]):
     repository_type: SQLAlchemyAsyncRepository[RefreshSession] = (
@@ -140,3 +160,18 @@ class RefreshSessionService(SQLAlchemyAsyncRepositoryService[RefreshSession]):
         super().__init__(
             session, statement, auto_expunge, auto_refresh, auto_commit, **repo_kwargs
         )
+
+    # async def access_token(self, user_id: int) -> Token:
+    #     if not user_id:
+    #         raise
+
+    # async def create(self, user_id: int) -> RefreshSession:
+    #     refresh_token: str = generate_refresh_token()
+
+    #     _schema: dict = RefreshSessionCreate(
+    #         refresh_token=refresh_token,
+    #         expires_in=timedelta(days=float(settings.auth.REFRESH_TOKEN_EXPIRE_DAYS)),
+    #         user_id=user_id,
+    #     ).model_dump()
+
+    #     return super().create(_schema)

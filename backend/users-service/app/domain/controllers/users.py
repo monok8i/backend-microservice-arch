@@ -1,9 +1,10 @@
-from typing import Annotated
+from typing import Annotated, Any
 
-from litestar import delete, get, post, patch, put
+from litestar import delete, get, post, patch, put, Request
 from litestar.params import Parameter, Body
 from litestar.controller import Controller
 from litestar.di import Provide
+from litestar.security.jwt import Token
 
 from advanced_alchemy.service import OffsetPagination
 
@@ -25,10 +26,9 @@ class UserController(Controller):
     return_dto = UserOutputDTO
     tags = ["users"]
 
-    # @get("/me", dependencies={"current_user": CurrentUser})
-    # async def get_me(self, current_user: User) -> User:
-    #     return current_user
-
+    @get("/me")
+    async def get_me(self, request: "Request[User, Token, Any]") -> User:
+        return request.user
 
     @get("/{user_id:int}", cache=True)
     async def get_user(

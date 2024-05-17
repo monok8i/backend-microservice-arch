@@ -73,6 +73,18 @@ class PydanticUser(PydanticBaseUser):
     updated_at: datetime
 
 
+class PydanticUserCredentials(PydanticBaseModel):
+    username: EmailStr
+    password: str
+
+
 class Token(PydanticBaseModel):
-    token: str
-    token_type: str
+    access_token: str
+    access_token_type: str
+    refresh_token: str
+
+
+class RefreshSessionCreate(PydanticBaseModel):
+    refresh_token: str
+    expires_in: int
+    user_id: int

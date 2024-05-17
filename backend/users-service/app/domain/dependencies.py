@@ -1,15 +1,14 @@
-from typing import Annotated
+from typing import AsyncGenerator
 
-from litestar import Request
-from litestar.di import Provide
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.services import UserService
-from app.database.models import User
 
 
-async def provide_users_service(db_session: AsyncSession) -> UserService:
-    return UserService(session=db_session)
+async def provide_users_service(
+    db_session: AsyncSession,
+) -> AsyncGenerator[UserService, None]:
+    yield UserService(session=db_session)
 
 
 # async def provide_auth_service(db_session: AsyncSession) -> AuthService:

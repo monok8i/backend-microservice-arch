@@ -3,7 +3,7 @@ from passlib.context import CryptContext
 hash_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def verify_password(*, user_password: str, hashed_password: str) -> bool:
+def verify_password(user_password: str, hashed_password: str) -> bool:
     """
     `verify_password` function checks whether the received cache is the specified term
     :param user_password: password original string
