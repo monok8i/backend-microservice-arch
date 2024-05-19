@@ -1,16 +1,16 @@
-from typing import Annotated, Any
+from typing import Annotated
 
-from litestar import delete, get, post, patch, put, Request
+from litestar import delete, get, post, patch, put
 from litestar.params import Parameter, Body
 from litestar.controller import Controller
 from litestar.di import Provide
-from litestar.security.jwt import Token
 
 from advanced_alchemy.service import OffsetPagination
 
 from app.database.models import User
-from app.domain.dependencies import provide_users_service  # , CurrentUser
+from app.domain.dependencies import provide_users_service, current_user
 from app.domain.services import UserService
+from app.domain.guards import super_user_guard
 from app.domain.schemas import (
     UserOutputDTO,
     PydanticUserCreate,
@@ -21,14 +21,15 @@ from app.domain.schemas import (
 
 class UserController(Controller):
     dependencies = {"service": Provide(provide_users_service)}
+    quargs = [super_user_guard]
     signature_namespace = {"UserService": UserService}
     path = "/users"
     return_dto = UserOutputDTO
     tags = ["users"]
 
-    @get("/me")
-    async def get_me(self, request: "Request[User, Token, Any]") -> User:
-        return request.user
+    @get("/me", dependencies={"user": Provide(current_user)})
+    async def get_me(self, user: User) -> User:
+        return user
 
     @get("/{user_id:int}", cache=True)
     async def get_user(

@@ -14,6 +14,18 @@ build:
 stop-all:
 	${dc} -f ${dc_yaml} stop
 
+.PHONY: stop
+stop:
+	@if [ -z "$(name)" ]; then \
+		echo "Please provide the container name using 'make stop name=<container_name>'"; \
+	else \
+		if docker ps -q -f name=$(name) | grep -q .; then \
+			docker stop -t 1 $(name); \
+		else \
+			echo "Container $(name) not found or already stopped."; \
+		fi \
+	fi
+
 .PHONY: drop-all
 drop-all:
 	${dc} -f ${dc_yaml} down
