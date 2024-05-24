@@ -11,7 +11,7 @@ from app.database.models import User
 from app.lib.schemas import CamelizedBaseStructModel
 from app.lib.schemas import PydanticBaseModel
 
-base_user_config = DTOConfig(exclude=("hashed_password", "refresh_session"))
+base_user_config = DTOConfig(exclude=("hashed_password", "refresh_token"))
 UserOutputDTO = SQLAlchemyDTO[Annotated[User, base_user_config]]
 
 

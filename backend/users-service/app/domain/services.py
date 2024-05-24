@@ -19,8 +19,8 @@ from advanced_alchemy.exceptions import (
     NotFoundError,
 )
 
-from app.database.models import User, RefreshSession
-from app.domain.repositories import UserRepository, RefreshSessionRepository
+from app.database.models import User, RefreshToken
+from app.domain.repositories import UserRepository, RefreshTokenRepository
 from app.domain.schemas import PydanticUser
 from app.lib.security.crypt import generate_hashed_password, verify_password
 from app.lib.exceptions import IntegrityException, EmailValidationException
@@ -38,7 +38,7 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
     def __init__(
         self,
         session: AsyncSession | async_scoped_session[AsyncSession],
-        statement: Select[tuple[RefreshSession]] | StatementLambdaElement | None = None,
+        statement: Select[tuple[User]] | StatementLambdaElement | None = None,
         auto_expunge: bool = False,
         auto_refresh: bool = True,
         auto_commit: bool = True,
@@ -123,35 +123,28 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
             raise HTTPException(detail=f"{ex}")
 
     async def authenticate(self, data: InputModelT) -> User:
-        try:
-            if is_dataclass(data):
-                _schema: dict[str, Any] = asdict(data)
-            if isinstance(data, BaseModel):
-                _schema: dict[str, Any] = data.model_dump()
-            if isinstance(data, dict):
-                _schema: dict[str, Any] = data
+        if is_dataclass(data):
+            _schema: dict[str, Any] = asdict(data)
+        if isinstance(data, BaseModel):
+            _schema: dict[str, Any] = data.model_dump()
+        if isinstance(data, dict):
+            _schema: dict[str, Any] = data
 
-            user = await self.get_one_or_none(email=_schema["username"])
+        user = await self.get_one_or_none(email=_schema["username"])
 
-            if not user or not verify_password(
-                _schema["password"], user.hashed_password
-            ):
-                raise NotFoundException(detail="Invalid user email or password")
+        if not user or not verify_password(_schema["password"], user.hashed_password):
+            raise NotFoundException(detail="Invalid user email or password")
 
-            return user
-        except Exception as ex:
-            raise HTTPException(detail=f"{ex}")
+        return user
 
 
-class RefreshSessionService(SQLAlchemyAsyncRepositoryService[RefreshSession]):
-    repository_type: SQLAlchemyAsyncRepository[RefreshSession] = (
-        RefreshSessionRepository
-    )
+class RefreshTokenService(SQLAlchemyAsyncRepositoryService[RefreshToken]):
+    repository_type: SQLAlchemyAsyncRepository[RefreshToken] = RefreshTokenRepository
 
     def __init__(
         self,
         session: AsyncSession | async_scoped_session[AsyncSession],
-        statement: Select[tuple[RefreshSession]] | StatementLambdaElement | None = None,
+        statement: Select[tuple[RefreshToken]] | StatementLambdaElement | None = None,
         auto_expunge: bool = False,
         auto_refresh: bool = False,
         auto_commit: bool = False,

@@ -4,7 +4,7 @@ from typing import Any
 
 from litestar.exceptions import PermissionDeniedException
 from litestar.connection import ASGIConnection
-from litestar.security.jwt import OAuth2PasswordBearerAuth, Token
+from litestar.security.jwt import Token, JWTAuth
 from litestar.handlers.base import BaseRouteHandler
 
 from app.core import settings
@@ -23,7 +23,7 @@ async def current_user_from_token(
         )
     )
 
-    user: User = await service.get_one_or_none(email=token.sub)
+    user: User = await service.get_one_or_none(id=int(token.sub))
 
     return user
 
@@ -34,9 +34,8 @@ async def super_user_guard(connection: ASGIConnection[Any, Any, Any, Any], _: Ba
     raise PermissionDeniedException(detail="Insufficient privileges")
 
 
-o2auth = OAuth2PasswordBearerAuth[User](
+o2auth = JWTAuth[User](
     retrieve_user_handler=current_user_from_token,
-    token_url="/api/auth/login",
     token_secret=settings.auth.JWT_PRIVATE_KEY_PATH.read_text(),
     algorithm=settings.auth.ALGORITHM,
     default_token_expiration=timedelta(minutes=settings.auth.ACCESS_TOKEN_EXPIRE_MINUTES),

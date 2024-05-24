@@ -1,3 +1,3 @@
-from .user import User, Base, RefreshSession
+from .user import User, Base, RefreshToken
 
-__all__ = ["User", "RefreshSession", "Base"]
+__all__ = ["User", "RefreshToken", "Base"]

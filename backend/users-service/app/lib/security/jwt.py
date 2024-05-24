@@ -1,21 +1,10 @@
+from typing import Any, Union
 import jwt
 
 from datetime import datetime, timedelta
-from typing import Any, Union, cast
-
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.database.models import User
 from app.core import settings
-from app.core.config import alchemy_config
 
-from litestar.connection import ASGIConnection
 from litestar.exceptions import NotAuthorizedException
-from litestar.middleware import (
-    AbstractAuthenticationMiddleware,
-    AuthenticationResult,
-)
 
 from .utils import get_authorization_scheme_param
 
@@ -54,27 +43,3 @@ def decode_jwt_token(
     if token_type.lower() != "bearer":
         raise NotAuthorizedException()
     return jwt.decode(token_value, public_key, algorithms=[algorithm])
-
-
-class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
-    async def authenticate_request(
-        self, connection: ASGIConnection
-    ) -> AuthenticationResult:
-        
-        # retrieve the auth header
-        auth_header = connection.headers.get(API_KEY_HEADER)
-        if not auth_header:
-            raise NotAuthorizedException()
-
-        # decode the token, the result is a ``Token`` model instance
-        token = decode_jwt_token(token_header_value=auth_header)
-        token_payload = dict(**token)
-
-        db_session = cast("AsyncSession", alchemy_config.provide_session(connection.app.state, connection.scope))
-        
-        async with db_session as async_session:
-            async with async_session.begin():
-                user = await async_session.execute(select(User).where(User.id == int(token_payload.get("sub"))))
-        if not user:
-            raise NotAuthorizedException()
-        return AuthenticationResult(user=user, auth=token)

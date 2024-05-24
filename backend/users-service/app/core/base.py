@@ -163,3 +163,4 @@ class Settings(CurrentEnvType):
     @property
     def auth(self) -> AuthenticationSettings:
         return AuthenticationSettings()
+    

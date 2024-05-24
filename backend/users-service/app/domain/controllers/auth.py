@@ -1,5 +1,5 @@
 from typing import Annotated
-from litestar import Request, Response, post
+from litestar import Response, post
 from litestar.di import Provide
 from litestar.params import Body
 from litestar.controller import Controller
@@ -34,20 +34,8 @@ class AuthController(Controller):
     ) -> Response[OAuth2Login]:
         user = await user_service.authenticate(data)
 
-        return o2auth.login(user.email)
+        return o2auth.login(str(user.id))
 
     @post("/logout")
-    async def logout(
-        self,
-        request: Request,
-    ) -> Response:
-        request.cookies.pop(o2auth.key, None)
-        request.clear_session()
-
-        response = Response(
-            content={"message": "OK"},
-            status_code=200,
-        )
-        response.delete_cookie(o2auth.key)
-
-        return response
+    async def logout(self) -> dict:
+        return {"ok": True}

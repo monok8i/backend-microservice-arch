@@ -11,12 +11,12 @@ class User(Base):
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     is_activated: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    refresh_session: Mapped["RefreshSession"] = relationship(
-        "RefreshSession", back_populates="user"
+    refresh_token: Mapped["RefreshToken"] = relationship(
+        "RefreshToken", back_populates="user"
     )
 
 
-class RefreshSession(Base):
+class RefreshToken(Base):
     refresh_token: Mapped[str] = mapped_column(String)
     expires_in: Mapped[int]
     user_id: Mapped[int] = mapped_column(
@@ -24,5 +24,5 @@ class RefreshSession(Base):
     )
 
     user: Mapped["User"] = relationship(
-        "User", back_populates="refresh_session", uselist=False
+        "User", back_populates="refresh_token", uselist=False
     )
