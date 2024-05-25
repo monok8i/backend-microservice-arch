@@ -27,7 +27,11 @@ from app.domain.repositories import UserRepository, RefreshTokenRepository
 from app.domain.schemas import PydanticUser, RefreshTokenCreate
 from app.lib.security.crypt import generate_hashed_password, verify_password
 from app.lib.exceptions import IntegrityException, EmailValidationException
-from app.lib.security.jwt import decode_jwt_token, encode_jwt_token, generate_refresh_token
+from app.lib.security.jwt import (
+    decode_jwt_token,
+    encode_jwt_token,
+    generate_refresh_token,
+)
 
 
 DataclassT = TypeVar("DataclassT", bound=dataclass)
@@ -67,6 +71,11 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
         if not user:
             raise NotFoundException(detail=f"No User found with {user_id=}")
         return user
+
+    async def get_user_with_refresh_token(self, **kwargs) -> User:
+        return await self.get_one_or_none(
+            statement=select(User).options(selectinload(User.refresh_token)), **kwargs
+        )
 
     async def get_users(self) -> OffsetPagination[PydanticUser]:
         results, count = await self.list_and_count()
@@ -126,11 +135,6 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
         except Exception as ex:
             raise HTTPException(detail=f"{ex}")
 
-    async def get_user_with_refresh_token(self, **kwargs) -> User:
-        return await self.get_one_or_none(
-            statement=select(User).options(selectinload(User.refresh_token)), **kwargs
-        )
-
     async def authenticate(self, data: InputModelT) -> User:
         if is_dataclass(data):
             _schema: dict[str, Any] = asdict(data)
@@ -183,11 +187,13 @@ class RefreshTokenService(SQLAlchemyAsyncRepositoryService[RefreshToken]):
         await super().create(_schema)
 
         return refresh_token
-    
-    async def delete(self, refresh_token: str) -> RefreshToken: 
-        await super().delete(id_attribute=refresh_token)
 
-    async def refresh_access_token(self, refresh_token: str, access_token_header: str) -> str:
+    async def delete(self, refresh_token: str) -> RefreshToken:
+        return await super().delete(id_attribute=refresh_token)
+
+    async def refresh_access_token(
+        self, refresh_token: str, access_token_header: str
+    ) -> str:
         refresh_token = await self.get_one_or_none(refresh_token=refresh_token)
 
         if not refresh_token:
@@ -197,9 +203,10 @@ class RefreshTokenService(SQLAlchemyAsyncRepositoryService[RefreshToken]):
             seconds=refresh_token.expires_in
         ):
             await self.delete(refresh_token.id)
-            raise HTTPException(detail="Refresh token expires, you must log in again", status_code=401)
-        
+            raise HTTPException(
+                detail="Refresh token expires, you must log in again", status_code=401
+            )
+
         expired_access_token = decode_jwt_token(access_token_header)
 
         return encode_jwt_token(expired_access_token.sub)
-
