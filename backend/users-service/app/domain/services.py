@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta, timezone
 from typing import Any, TypeVar, Dict, TypeAlias, Union
 
 from pydantic import BaseModel
@@ -8,7 +9,8 @@ from email_validator import EmailNotValidError
 
 from litestar.exceptions import NotFoundException, HTTPException
 
-from sqlalchemy import Select, StatementLambdaElement
+from sqlalchemy import Select, StatementLambdaElement, select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio.scoping import async_scoped_session
 
@@ -19,11 +21,13 @@ from advanced_alchemy.exceptions import (
     NotFoundError,
 )
 
+from app.core import settings
 from app.database.models import User, RefreshToken
 from app.domain.repositories import UserRepository, RefreshTokenRepository
-from app.domain.schemas import PydanticUser
+from app.domain.schemas import PydanticUser, RefreshTokenCreate
 from app.lib.security.crypt import generate_hashed_password, verify_password
 from app.lib.exceptions import IntegrityException, EmailValidationException
+from app.lib.security.jwt import decode_jwt_token, encode_jwt_token, generate_refresh_token
 
 
 DataclassT = TypeVar("DataclassT", bound=dataclass)
@@ -122,6 +126,11 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
         except Exception as ex:
             raise HTTPException(detail=f"{ex}")
 
+    async def get_user_with_refresh_token(self, **kwargs) -> User:
+        return await self.get_one_or_none(
+            statement=select(User).options(selectinload(User.refresh_token)), **kwargs
+        )
+
     async def authenticate(self, data: InputModelT) -> User:
         if is_dataclass(data):
             _schema: dict[str, Any] = asdict(data)
@@ -130,7 +139,7 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
         if isinstance(data, dict):
             _schema: dict[str, Any] = data
 
-        user = await self.get_one_or_none(email=_schema["username"])
+        user = await self.get_user_with_refresh_token(email=_schema["username"])
 
         if not user or not verify_password(_schema["password"], user.hashed_password):
             raise NotFoundException(detail="Invalid user email or password")
@@ -144,10 +153,12 @@ class RefreshTokenService(SQLAlchemyAsyncRepositoryService[RefreshToken]):
     def __init__(
         self,
         session: AsyncSession | async_scoped_session[AsyncSession],
-        statement: Select[tuple[RefreshToken]] | StatementLambdaElement | None = None,
+        statement: Select[tuple[RefreshToken]] | StatementLambdaElement | None = select(
+            RefreshToken
+        ).options(selectinload(RefreshToken.user)),
         auto_expunge: bool = False,
-        auto_refresh: bool = False,
-        auto_commit: bool = False,
+        auto_refresh: bool = True,
+        auto_commit: bool = True,
         **repo_kwargs: Any,
     ) -> None:
         super().__init__(
@@ -158,13 +169,34 @@ class RefreshTokenService(SQLAlchemyAsyncRepositoryService[RefreshToken]):
     #     if not user_id:
     #         raise
 
-    # async def create(self, user_id: int) -> RefreshSession:
-    #     refresh_token: str = generate_refresh_token()
+    async def create(self, user_id: int) -> str:
+        refresh_token: str = generate_refresh_token()
 
-    #     _schema: dict = RefreshSessionCreate(
-    #         refresh_token=refresh_token,
-    #         expires_in=timedelta(days=float(settings.auth.REFRESH_TOKEN_EXPIRE_DAYS)),
-    #         user_id=user_id,
-    #     ).model_dump()
+        _schema: dict = RefreshTokenCreate(
+            refresh_token=refresh_token,
+            expires_in=timedelta(
+                days=float(settings.auth.REFRESH_TOKEN_EXPIRE_DAYS)
+            ).total_seconds(),
+            user_id=user_id,
+        ).model_dump()
 
-    #     return super().create(_schema)
+        await super().create(_schema)
+
+        return refresh_token
+
+    async def refresh_access_token(self, refresh_token: str, access_token_header: str) -> str:
+        refresh_token = await self.get_one_or_none(refresh_token=refresh_token)
+
+        if not refresh_token:
+            raise HTTPException(detail="Invalid refresh token", status_code=401)
+
+        if datetime.now(timezone.utc) > refresh_token.created_at + timedelta(
+            seconds=refresh_token.expires_in
+        ):
+            await self.delete(refresh_token.id)
+            raise HTTPException(detail="Refresh token expires", status_code=401)
+        
+        expired_access_token = decode_jwt_token(access_token_header)
+
+        return encode_jwt_token(expired_access_token.sub)
+

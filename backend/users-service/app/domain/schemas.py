@@ -78,13 +78,17 @@ class PydanticUserCredentials(PydanticBaseModel):
     password: str
 
 
+class AccessTokenPayload(PydanticBaseModel):
+    sub: str | None
+
+
 class Token(PydanticBaseModel):
     access_token: str
     access_token_type: str
     refresh_token: str
 
 
-class RefreshSessionCreate(PydanticBaseModel):
+class RefreshTokenCreate(PydanticBaseModel):
     refresh_token: str
-    expires_in: int
+    expires_in: int | float
     user_id: int

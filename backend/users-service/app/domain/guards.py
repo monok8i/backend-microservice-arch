@@ -39,5 +39,5 @@ o2auth = JWTAuth[User](
     token_secret=settings.auth.JWT_PRIVATE_KEY_PATH.read_text(),
     algorithm=settings.auth.ALGORITHM,
     default_token_expiration=timedelta(minutes=settings.auth.ACCESS_TOKEN_EXPIRE_MINUTES),
-    exclude=["/api/schema", "/api/auth/login"],
+    exclude=["/api/schema", "/api/auth/"],
 )

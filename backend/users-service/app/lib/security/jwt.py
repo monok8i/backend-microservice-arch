@@ -1,3 +1,4 @@
+import secrets
 from typing import Any, Union
 import jwt
 
@@ -5,6 +6,8 @@ from datetime import datetime, timedelta
 from app.core import settings
 
 from litestar.exceptions import NotAuthorizedException
+
+from app.domain.schemas import AccessTokenPayload
 
 from .utils import get_authorization_scheme_param
 
@@ -42,4 +45,11 @@ def decode_jwt_token(
     token_type, token_value = get_authorization_scheme_param(token_header_value)
     if token_type.lower() != "bearer":
         raise NotAuthorizedException()
-    return jwt.decode(token_value, public_key, algorithms=[algorithm])
+
+    payload = jwt.decode(token_value, public_key, algorithms=[algorithm])
+
+    return AccessTokenPayload(**payload)
+
+
+def generate_refresh_token(lenght: int = 64) -> str:
+    return secrets.token_urlsafe(lenght)
