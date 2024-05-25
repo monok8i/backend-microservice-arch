@@ -183,6 +183,9 @@ class RefreshTokenService(SQLAlchemyAsyncRepositoryService[RefreshToken]):
         await super().create(_schema)
 
         return refresh_token
+    
+    async def delete(self, refresh_token: str) -> RefreshToken: 
+        await super().delete(id_attribute=refresh_token)
 
     async def refresh_access_token(self, refresh_token: str, access_token_header: str) -> str:
         refresh_token = await self.get_one_or_none(refresh_token=refresh_token)
@@ -194,7 +197,7 @@ class RefreshTokenService(SQLAlchemyAsyncRepositoryService[RefreshToken]):
             seconds=refresh_token.expires_in
         ):
             await self.delete(refresh_token.id)
-            raise HTTPException(detail="Refresh token expires", status_code=401)
+            raise HTTPException(detail="Refresh token expires, you must log in again", status_code=401)
         
         expired_access_token = decode_jwt_token(access_token_header)
 

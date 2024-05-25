@@ -49,7 +49,7 @@ class AuthController(Controller):
 
         if not user.refresh_token:
             refresh_token = await refresh_token_service.create(user.id)
-            
+
         response.set_cookie(
             "refresh_token",
             value=refresh_token,
@@ -60,12 +60,16 @@ class AuthController(Controller):
         return response
 
     @post("/logout/access-token")
-    async def logout(self, request: Request) -> Response:
+    async def logout(
+        self, request: Request, refresh_token_service: RefreshTokenService
+    ) -> Response:
         request.headers.pop("Authorization", None)
-        request.cookies.pop("refresh_token", None)
+        refresh_token = request.cookies.pop("refresh_token", None)
 
         response = Response(content={"Logout": "Ok"}, status_code=200)
+
         response.delete_cookie("refresh_token")
+        _ = await refresh_token_service.delete(refresh_token)
 
         return response
 
