@@ -14,6 +14,7 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio.scoping import async_scoped_session
 
+from advanced_alchemy.filters import FilterTypes
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService, OffsetPagination
 from advanced_alchemy.repository import SQLAlchemyAsyncRepository
 from advanced_alchemy.exceptions import (
@@ -77,9 +78,9 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
             statement=select(User).options(selectinload(User.refresh_token)), **kwargs
         )
 
-    async def get_users(self) -> OffsetPagination[PydanticUser]:
-        results, count = await self.list_and_count()
-        return self.to_schema(data=results, total=count, schema_type=PydanticUser)
+    async def get_users(self, *filters: FilterTypes) -> OffsetPagination[PydanticUser]:
+        results, count = await self.list_and_count(*filters)
+        return self.to_schema(data=results, total=count, schema_type=PydanticUser, filters=filters)
 
     async def create(self, *, data: InputModelT) -> User:
         try:

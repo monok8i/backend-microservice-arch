@@ -1,10 +1,11 @@
 from typing import Annotated
 
 from litestar import delete, get, post, patch, put
-from litestar.params import Parameter, Body
+from litestar.params import Parameter, Body, Dependency
 from litestar.controller import Controller
 from litestar.di import Provide
 
+from advanced_alchemy.filters import FilterTypes
 from advanced_alchemy.service import OffsetPagination
 
 from app.database.models import User
@@ -61,12 +62,13 @@ class UserController(Controller):
     ) -> User:
         return await service.create(data=data)
 
-    @get("/", return_dto=None, cache=True)
+    @get("/", return_dto=None, cache=False)
     async def get_users(
         self,
         service: UserService,
+        filters: Annotated[list[FilterTypes], Dependency(skip_validation=True)],
     ) -> OffsetPagination[PydanticUser]:
-        return await service.get_users()
+        return await service.get_users(*filters)
 
     @patch("/{user_id:int}")
     async def patch_user(
