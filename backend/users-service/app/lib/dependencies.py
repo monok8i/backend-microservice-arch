@@ -1,10 +1,5 @@
-"""Application dependency providers."""
-
-from __future__ import annotations
-
 from datetime import datetime
 from typing import Literal
-from uuid import UUID
 
 from advanced_alchemy.filters import (
     BeforeAfter,
@@ -36,7 +31,6 @@ __all__ = [
 
 DTorNone = datetime | None
 StringOrNone = str | None
-UuidOrNone = UUID | None
 BooleanOrNone = bool | None
 SortOrderOrNone = Literal["asc", "desc"] | None
 """Aggregate type alias of the types supported for collection filtering."""
