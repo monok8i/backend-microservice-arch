@@ -302,8 +302,3 @@ nginx/
 
 email-service/
 
-rabbitmq/
-
-Dockerfile
-docker-compose.yaml
-Makefile

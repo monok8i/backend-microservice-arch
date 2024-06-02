@@ -9,6 +9,8 @@ from litestar.plugins.structlog import StructlogConfig
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
 from litestar.middleware.logging import LoggingMiddlewareConfig
 
+from app.lib.broker.rmq_plugin import RabbitMQConfig
+
 from .base import Settings
 
 
@@ -63,4 +65,13 @@ log_config = StructlogConfig(
         request_log_fields=["method", "path", "path_params", "query"],
         response_log_fields=["status_code"],
     ),
+)
+
+rabbitmq_config = RabbitMQConfig(
+    host=settings.rabbitmq.AMQP_HOST,
+    port=settings.rabbitmq.AMQP_PORT,
+    credentials={
+        "username": settings.rabbitmq.AMQP_USER,
+        "password": settings.rabbitmq.AMQP_PASSWORD,
+    },
 )

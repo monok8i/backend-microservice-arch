@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from litestar import delete, get, post, patch, put
+from litestar import Request, delete, get, post, patch, put
 from litestar.params import Parameter, Body, Dependency
 from litestar.controller import Controller
 from litestar.di import Provide
@@ -51,6 +51,7 @@ class UserController(Controller):
     async def create_user(
         self,
         service: UserService,
+        request: Request,
         *,
         data: Annotated[
             PydanticUserCreate,
@@ -60,7 +61,12 @@ class UserController(Controller):
             ),
         ],
     ) -> User:
-        return await service.create(data=data)
+        user = await service.create(data=data)
+        request.app.emit(
+            "user_created", email=data.email, state=request.app.state
+        )
+
+        return user
 
     @get("/", return_dto=None, cache=False)
     async def get_users(

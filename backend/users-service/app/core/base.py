@@ -7,7 +7,7 @@ from typing import Optional
 from redis.asyncio import Redis
 from litestar.stores.redis import RedisStore
 
-from pydantic import PostgresDsn, field_validator
+from pydantic import AmqpDsn, PostgresDsn, field_validator
 from pydantic_core.core_schema import FieldValidationInfo
 
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
@@ -147,6 +147,35 @@ class AuthenticationSettings(CurrentEnvType):
     ALGORITHM: str = "RS256"
 
 
+class RabbitMQSettings(CurrentEnvType):
+    AMQP_HOST: str
+    AMQP_PORT: int
+    AMQP_USER: str
+    AMQP_PASSWORD: str
+    AMQP_VHOST: str
+
+    AMQP_BROKER_URI: Optional[str] = None
+
+    @field_validator("AMQP_BROKER_URI", mode="before")
+    def assemble_db_connection(
+        cls,  # noqa: N805
+        v: Optional[str],
+        info: FieldValidationInfo,
+    ) -> str:
+        if isinstance(v, str):
+            return v
+        return str(
+            AmqpDsn.build(
+                scheme="amqp",
+                username=info.data.get("AMQP_USER"),
+                password=info.data.get("AMQP_PASSWORD"),
+                host=info.data.get("AMQP_HOST"),
+                port=info.data.get("AMQP_PORT"),
+            )
+        )
+    
+
+
 class Settings(CurrentEnvType):
     @property
     def database(self) -> Database:
@@ -163,4 +192,8 @@ class Settings(CurrentEnvType):
     @property
     def auth(self) -> AuthenticationSettings:
         return AuthenticationSettings()
+    
+    @property
+    def rabbitmq(self) -> RabbitMQSettings:
+        return RabbitMQSettings()
     

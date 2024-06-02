@@ -7,11 +7,6 @@ services:
     build:
       context: ./users-service/
       dockerfile: Dockerfile
-    develop:
-      watch:
-        - action: sync
-          path: ./users-service/
-          target: ./app/
     ports:
       - "80:80"
     volumes:
@@ -20,6 +15,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - rabbitmq
     networks:
       - backend-network
 
@@ -63,18 +59,18 @@ services:
   #    networks:
   #      - backend
 
-  # rabbitmq:
-  #   image: rabbitmq:3-management-alpine
-  #   container_name: broker
-  #   ports:
-  #     - 5672:5672
-  #     - 15672:15672
-  #   volumes:
-  #     - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
-  #     # - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-  #     - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
-  #   networks:
-  #     - backend
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: litestar-message-broker
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+      # - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
+    networks:
+      - backend-network
 
   # email_service:
   #   image: email-service:latest
