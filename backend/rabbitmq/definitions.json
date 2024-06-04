@@ -1,8 +1,8 @@
 {
    "permissions":[
       {
-         "configure": "",
-         "read": "",
+         "configure": ".*",
+         "read": ".*",
          "user": "docker-publisher",
          "vhost": "/",
          "write": ".*"
