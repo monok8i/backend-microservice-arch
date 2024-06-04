@@ -1,4 +1,4 @@
-from typing import Any, AsyncGenerator #, Callable
+from typing import Any, AsyncGenerator  # , Callable
 from dataclasses import dataclass
 from contextlib import asynccontextmanager
 
@@ -73,7 +73,8 @@ class RabbitMQPlugin(InitPluginProtocol):
         self._config = config
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
-        app_config.lifespan.append(self._config.lifespan)
+        # app_config.lifespan.append(self._config.lifespan)
+        app_config.state.update(self._config.create_state_keys())
         return app_config
 
 

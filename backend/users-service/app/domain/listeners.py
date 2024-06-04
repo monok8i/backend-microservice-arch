@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 @listener("user_created")
 async def user_created(email: str, state: State) -> bool:
     try:
-        connection = state.rmq_session()
+        connection = state.rmq_session # type: pika.adapters.BlockingConnection
         broker = await anext(provide_message_broker(connection))
 
         with broker as rmq:

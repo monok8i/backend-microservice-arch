@@ -21,7 +21,7 @@ class RabbitMQPublisher:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
-        self._connection.close()
+        pass
 
     def send_message(self, email: str) -> None:
         self._channel.basic_publish("", routing_key="emails", body=email)
