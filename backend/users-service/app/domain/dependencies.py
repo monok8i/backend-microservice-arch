@@ -2,7 +2,7 @@ from typing import AsyncGenerator
 
 from litestar import Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from pika.adapters import BlockingConnection
+from aio_pika.abc import AbstractConnection
 
 from app.database.models.user import User
 from app.domain.services import RefreshTokenService, UserService
@@ -16,7 +16,7 @@ async def provide_users_service(
 
 
 async def provide_message_broker(
-    connection: BlockingConnection,
+    connection: AbstractConnection,
 ) -> AsyncGenerator[RabbitMQPublisher, None]:
     yield RabbitMQPublisher(connection)
 
