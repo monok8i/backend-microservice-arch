@@ -12,11 +12,12 @@ logger = logging.getLogger(__name__)
 @listener("user_created")
 async def user_created(email: str, state: State) -> bool:
     try:
-        connection = state.rmq_session # type: pika.adapters.BlockingConnection
+        connection = state.rmq_session # type: aio_pika.abc.AbstractConnection
         broker = await anext(provide_message_broker(connection))
 
-        with broker as rmq:
-            rmq.send_message(email)
+        async with broker as rmq:
+            message = await rmq.publish_message(body=email)
+            print(message)
 
         logger.info("Email successfully sended to broker")
 

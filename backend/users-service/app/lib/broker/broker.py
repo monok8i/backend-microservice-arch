@@ -1,27 +1,31 @@
+from typing import Any, Self
 from dataclasses import dataclass, field
 
-from pika.adapters import BlockingConnection  # SelectConnection, BlockingConnection
-from pika.channel import Channel
-from pika.spec import Queue
+from aio_pika.abc import AbstractConnection, AbstractChannel, AbstractQueue
+from aio_pika.message import Message
 
 
 @dataclass
 class RabbitMQPublisher:
-    _connection: BlockingConnection
+    _connection: AbstractConnection
 
-    _channel: Channel = field(default=None, init=False)
-    _queue: Queue = field(default=None, init=False)
+    _channel: AbstractChannel = field(default=None, init=False)
+    _queue: AbstractQueue = field(default=None, init=False)
 
-    def __enter__(self) -> "RabbitMQPublisher":
+    async def __aenter__(self) -> Self:
         if not self._channel:
-            self._channel = self._connection.channel()
+            self._channel = await self._connection.channel()
         if not self._queue:
-            self._queue = self._channel.queue_declare("emails")
+            self._queue = await self._channel.declare_queue("emails")
 
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
+    async def __aexit__(self, exc_type, exc_value, traceback) -> None:
         pass
 
-    def send_message(self, email: str) -> None:
-        self._channel.basic_publish("", routing_key="emails", body=email)
+    async def publish_message(self, body: str) -> Any:
+        message = Message(bytes(body.encode("utf-8")))
+
+        return await self._channel.default_exchange.publish(
+            message=message, routing_key=self._queue.name
+        )

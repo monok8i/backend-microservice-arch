@@ -6,7 +6,8 @@ from litestar import Litestar
 from litestar.config.app import AppConfig
 from litestar.plugins import InitPluginProtocol
 
-from pika import ConnectionParameters, PlainCredentials, BlockingConnection
+from aio_pika.abc import AbstractConnection
+from aio_pika.connection import connect
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -15,41 +16,20 @@ class RabbitMQConfig:
     port: int = 5672
     vhost: str = "/"
     credentials: dict[str, str] = None
-    connection: type[BlockingConnection] = None
+    connection: type[AbstractConnection] = None
 
     dependency_key: str = "rmq_session"
 
-    def create_connection(
+    async def create_connection(
         self,
-        # on_open_callback: Callable[[], Any] = None,
-        # on_open_error_callback: Callable[[], Any] = None,
-        # on_close_callback: Callable[[], Any] = None,
-    ) -> BlockingConnection:
+    ) -> AbstractConnection:
         if not self.connection:
-            if not self.credentials:
-                return BlockingConnection(
-                    parameters=ConnectionParameters(
-                        host=self.host,
-                        port=self.port,
-                        virtual_host=self.vhost,
-                    ),
-                    # on_open_callback=on_open_callback,
-                    # on_open_error_callback=on_open_error_callback,
-                    # on_close_callback=on_close_callback,
-                )
-            return BlockingConnection(
-                parameters=ConnectionParameters(
-                    host=self.host,
-                    port=self.port,
-                    virtual_host=self.vhost,
-                    credentials=PlainCredentials(
-                        username=self.credentials.get("username"),
-                        password=self.credentials.get("password"),
-                    ),
-                ),
-                # on_open_callback=on_open_callback,
-                # on_open_error_callback=on_open_error_callback,
-                # on_close_callback=on_close_callback,
+            return await connect(
+                host=self.host,
+                port=self.port,
+                login=self.credentials.get("username"),
+                password=self.credentials.get("password"),
+                virtualhost=self.vhost,
             )
 
         return self.connection

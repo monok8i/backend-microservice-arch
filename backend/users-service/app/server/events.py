@@ -2,23 +2,23 @@ from typing import AsyncGenerator
 from litestar import Litestar
 from contextlib import asynccontextmanager
 
-from pika.adapters import BlockingConnection
+from aio_pika.abc import AbstractConnection
 
 
 @asynccontextmanager
 async def lifespan(app: Litestar) -> AsyncGenerator[None, None]:
     try:
-        broker_callable_connection = app.state.get("rmq_session")
-        connection: BlockingConnection = broker_callable_connection()
+        broker_coroutine_connection = app.state.get("rmq_session")
+        connection: AbstractConnection = await broker_coroutine_connection()
         app.state.update({"rmq_session": connection})
     except Exception as e:
-        reconnect: BlockingConnection = broker_callable_connection()
+        reconnect: AbstractConnection = await broker_coroutine_connection()
         app.state.update({"rmq_session": reconnect})
         raise e
-    
+
     yield
 
     try:
-        connection.close()
+        await connection.close()
     except Exception as e:
         raise e
