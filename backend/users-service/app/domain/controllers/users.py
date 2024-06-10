@@ -63,7 +63,9 @@ class UserController(Controller):
     ) -> User:
         user = await service.create(data=data)
         request.app.emit(
-            "user_created", email=data.email, state=request.app.state
+            "user_created",
+            email=data.email,
+            broker_connection=request.app.dependencies.get("rmq_session"),
         )
 
         return user

@@ -102,6 +102,7 @@ class LogSettings(CurrentEnvType):
     """Level to log uvicorn access logs."""
     UVICORN_ERROR_LEVEL: int = 20
     """Level to log uvicorn error logs."""
+    AIOPIKA_LEVEL: int = 20
 
 
 class RedisSettings(CurrentEnvType):
@@ -173,7 +174,6 @@ class RabbitMQSettings(CurrentEnvType):
                 port=info.data.get("AMQP_PORT"),
             )
         )
-    
 
 
 class Settings(CurrentEnvType):
@@ -192,8 +192,7 @@ class Settings(CurrentEnvType):
     @property
     def auth(self) -> AuthenticationSettings:
         return AuthenticationSettings()
-    
+
     @property
     def rabbitmq(self) -> RabbitMQSettings:
         return RabbitMQSettings()
-    

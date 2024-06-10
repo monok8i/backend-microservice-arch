@@ -54,8 +54,5 @@ class RabbitMQPlugin(InitPluginProtocol):
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         # app_config.lifespan.append(self._config.lifespan)
-        app_config.state.update(self._config.create_state_keys())
+        app_config.dependencies.update(self._config.create_state_keys())
         return app_config
-
-
-print(type(RabbitMQConfig().create_connection))

@@ -9,7 +9,7 @@ from litestar.plugins.structlog import StructlogConfig
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
 from litestar.middleware.logging import LoggingMiddlewareConfig
 
-from app.lib.broker.rmq_plugin import RabbitMQConfig
+from app.utils.broker import RabbitMQConfig
 
 from .base import Settings
 
@@ -56,6 +56,11 @@ log_config = StructlogConfig(
                 "sqlalchemy.pool": {
                     "propagate": False,
                     "level": settings.logging.SQLALCHEMY_LEVEL,
+                    "handlers": ["queue_listener"],
+                },
+                "aio_pika": {
+                    "propagate": False,
+                    "level": settings.logging.AIOPIKA_LEVEL,
                     "handlers": ["queue_listener"],
                 },
             },

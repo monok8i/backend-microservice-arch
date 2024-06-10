@@ -6,7 +6,7 @@ from aio_pika.abc import AbstractConnection
 
 from app.database.models.user import User
 from app.domain.services import RefreshTokenService, UserService
-from app.lib.broker import RabbitMQPublisher
+from app.utils.broker import RabbitMQPublisher
 
 
 async def provide_users_service(
