@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from litestar import Request, delete, get, post, patch, put
+from litestar import delete, get, post, patch, put
 from litestar.params import Parameter, Body, Dependency
 from litestar.controller import Controller
 from litestar.di import Provide
@@ -22,7 +22,7 @@ from app.domain.schemas import (
 
 class UserController(Controller):
     dependencies = {"service": Provide(provide_users_service)}
-    quargs = [super_user_guard]
+    quards = [super_user_guard]
     signature_namespace = {"UserService": UserService}
     path = "/users"
     return_dto = UserOutputDTO
@@ -51,7 +51,6 @@ class UserController(Controller):
     async def create_user(
         self,
         service: UserService,
-        request: Request,
         *,
         data: Annotated[
             PydanticUserCreate,
@@ -62,11 +61,6 @@ class UserController(Controller):
         ],
     ) -> User:
         user = await service.create(data=data)
-        request.app.emit(
-            "user_created",
-            email=data.email,
-            broker_connection=request.app.dependencies.get("rmq_session"),
-        )
 
         return user
 

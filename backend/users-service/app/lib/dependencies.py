@@ -54,6 +54,8 @@ def provide_id_filter(
     Returns:
         CollectionFilter[int]: Filter for a scoping query to a limited set of identities.
     """
+    if not ids:
+        return CollectionFilter(field_name="id", values=None)
     return CollectionFilter(field_name="id", values=list(map(int, ids[0].split(","))))
 
 

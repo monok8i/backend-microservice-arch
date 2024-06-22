@@ -9,8 +9,9 @@ from litestar.enums import RequestEncodingType
 from litestar.security.jwt import OAuth2Login
 
 from app.core import settings
+from app.database.models import User
 from app.domain.services import RefreshTokenService, UserService
-from app.domain.schemas import PydanticUserCredentials
+from app.domain.schemas import PydanticUserCreate, PydanticUserCredentials, UserOutputDTO
 from app.domain.dependencies import provide_users_service, provide_refresh_token_service
 from app.domain.guards import o2auth
 from app.lib.security.jwt import generate_refresh_token
@@ -30,8 +31,23 @@ class AuthController(Controller):
         "Body": Body,
     }
 
-    @post("/login/access-token")
-    async def jwt_token(
+    @post("/register", return_dto=UserOutputDTO)
+    async def register_user(
+        self,
+        request: Request,
+        user_service: UserService,
+        data: Annotated[
+            PydanticUserCreate,
+            Body(title="Register", description="Register a new user")
+        ],
+    ) -> User:
+        user = await user_service.create(data=data)
+        request.app.emit("user_created", email=user.email, broker_connection=request.app.dependencies.get("rmq_session"))
+
+        return user
+
+    @post("/login")
+    async def login_user(
         self,
         user_service: UserService,
         refresh_token_service: RefreshTokenService,
@@ -59,7 +75,7 @@ class AuthController(Controller):
 
         return response
 
-    @post("/logout/access-token")
+    @post("/logout")
     async def logout(
         self, request: Request, refresh_token_service: RefreshTokenService
     ) -> Response:
