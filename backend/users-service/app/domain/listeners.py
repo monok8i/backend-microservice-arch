@@ -2,16 +2,16 @@ import logging
 
 from litestar.events import listener
 
-from app.utils.broker import RabbitMQPublisher
+from app.utils.message_brokers import RabbitMQPublisher
 from .dependencies import provide_message_broker
 
-from aio_pika.abc import AbstractConnection
+from aio_pika import Connection
 
 logger = logging.getLogger(__name__)
 
 
 @listener("user_created")
-async def user_created(email: str, broker_connection: AbstractConnection) -> bool:
+async def user_created(email: str, broker_connection: Connection) -> bool:
     try:
         broker: RabbitMQPublisher = await anext(provide_message_broker(broker_connection))
 

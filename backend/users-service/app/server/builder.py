@@ -1,4 +1,5 @@
 import logging
+from aio_pika import Connection, Exchange
 from litestar import Litestar
 
 from aio_pika.abc import AbstractConnection
@@ -7,6 +8,7 @@ from app.lib.dependencies import create_collection_dependencies
 from app.domain.guards import o2auth
 from app.domain import listeners
 from app.core.config import cache_config
+from app.utils.message_brokers.broker import RabbitMQPublisher
 from app.utils.logging import LoggersConfigurator, Logger
 from app.utils.logging.handlers import (
     AIOPikaLoggingHandler,
@@ -90,3 +92,6 @@ def configure_loggers(broker_class, broker_connection: AbstractConnection) -> No
     configurator.add_logger(Logger(
 
     ))
+
+
+def configure_broker(connection: Connection) -> RabbitMQPublisher: ...

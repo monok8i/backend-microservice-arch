@@ -3,7 +3,7 @@ import logging
 from dataclasses import dataclass
 from aio_pika.abc import AbstractConnection
 
-from app.utils.broker import RabbitMQPublisher
+from app.utils.message_brokers import RabbitMQPublisher
 
 
 @dataclass(kw_only=True)

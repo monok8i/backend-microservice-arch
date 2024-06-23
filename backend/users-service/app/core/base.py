@@ -174,6 +174,8 @@ class RabbitMQSettings(CurrentEnvType):
                 port=info.data.get("AMQP_PORT"),
             )
         )
+    
+    
 
 
 class Settings(CurrentEnvType):

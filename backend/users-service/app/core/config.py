@@ -9,7 +9,7 @@ from litestar.plugins.structlog import StructlogConfig
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
 from litestar.middleware.logging import LoggingMiddlewareConfig
 
-from app.utils.broker import RabbitMQConfig
+from app.utils.message_brokers import RabbitMQConfig
 
 from .base import Settings
 

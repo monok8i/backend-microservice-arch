@@ -1,16 +1,16 @@
 from typing import Any, Self
 from dataclasses import dataclass, field
 
-from aio_pika.abc import AbstractConnection, AbstractChannel, AbstractQueue
+from aio_pika import Exchange, Connection, Channel, Queue
 from aio_pika.message import Message
 
 
 @dataclass
 class RabbitMQPublisher:
-    _connection: AbstractConnection
+    _connection: Connection
 
-    _channel: AbstractChannel = field(default=None, init=False)
-    _queue: AbstractQueue = field(default=None, init=False)
+    _channel: Channel = field(default=None, init=False)
+    _queue: Queue = field(default=None, init=False)
 
     async def __aenter__(self) -> Self:
         if not self._channel:
