@@ -28,3 +28,49 @@ pre-commit = "^3.7.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+select = [
+    "C",
+    "DTZ",
+    "E",
+    "F",
+    "I",
+    "ICN",
+    "ISC",
+    "N",
+    "PLC",
+    "PLE",
+    "Q",
+    "S",
+    "T",
+    "W",
+    "YTT",
+    "RET",
+    "SIM",
+    "ASYNC",
+]
+exclude = [
+    ".venv",
+    ".idea",
+    ".tests",
+    ".certs",
+    "poetry.lock",
+]
+ignore = ["F401", "ISC001"]
+
+
+[tool.mypy]
+plugins = [
+    "sqlalchemy.ext.mypy.plugin",
+    "pydantic.mypy"
+]
+exclude = [
+    ".venv",
+    ".idea",
+    ".tests",
+    ".cert",
+]
