@@ -1,17 +1,16 @@
 from datetime import timedelta
 from typing import Any
 
-
-from litestar.exceptions import PermissionDeniedException
 from litestar.connection import ASGIConnection
-from litestar.security.jwt import Token, JWTAuth
+from litestar.exceptions import PermissionDeniedException
 from litestar.handlers.base import BaseRouteHandler
+from litestar.security.jwt import JWTAuth, Token
 
 from app.core import settings
 from app.core.config import alchemy_config
 from app.database.models import User
-from app.domain.services import UserService
 from app.domain.dependencies import provide_users_service
+from app.domain.services import UserService
 
 
 async def current_user_from_token(

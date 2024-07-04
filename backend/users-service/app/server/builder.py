@@ -1,13 +1,12 @@
 from litestar import Litestar
 
-from app.lib.dependencies import create_collection_dependencies
-from app.domain.guards import o2auth
-from app.domain import listeners
-
 from app.core.config import cache_config
+from app.domain import listeners
+from app.domain.guards import o2auth
+from app.lib.dependencies import create_collection_dependencies
 
 from . import events
-from .plugins import sqlalchemy_init_plugin, rabbitmq_plugin, structlog_plugin
+from .plugins import rabbitmq_plugin, sqlalchemy_init_plugin, structlog_plugin
 from .routes import route_handlers
 
 

@@ -1,3 +1,3 @@
-from .configurator import LoggersConfigurator, Logger
+from .configurator import Logger, LoggersConfigurator
 
 __all__ = ["LoggersConfigurator", "Logger"]

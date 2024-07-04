@@ -1,13 +1,9 @@
 from typing import Any
 
-from litestar.connection import Request
-from litestar.middleware.exceptions.middleware import ExceptionResponseContent
-from litestar.response import Response
-
-from email_validator.exceptions_types import EmailNotValidError
-
 from advanced_alchemy.exceptions import IntegrityError
-
+from email_validator.exceptions_types import EmailNotValidError
+from litestar import status_codes
+from litestar.connection import Request
 from litestar.exceptions import (
     HTTPException,
     InternalServerException,
@@ -15,10 +11,12 @@ from litestar.exceptions import (
     PermissionDeniedException,
 )
 from litestar.middleware.exceptions._debug_response import create_debug_response
-from litestar.middleware.exceptions.middleware import create_exception_response
+from litestar.middleware.exceptions.middleware import (
+    ExceptionResponseContent,
+    create_exception_response,
+)
 from litestar.repository.exceptions import ConflictError, NotFoundError, RepositoryError
-
-from litestar import status_codes
+from litestar.response import Response
 
 
 class _HTTPConflictException(HTTPException):

@@ -1,11 +1,10 @@
 from dataclasses import dataclass
 from typing import Any
 
-from litestar.config.app import AppConfig
-from litestar.plugins import InitPluginProtocol
-
 from aio_pika import Connection
 from aio_pika.connection import connect
+from litestar.config.app import AppConfig
+from litestar.plugins import InitPluginProtocol
 
 
 @dataclass(kw_only=True, frozen=True)

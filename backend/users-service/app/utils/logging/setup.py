@@ -3,11 +3,11 @@ import logging
 from app.core import settings
 from app.utils.message_brokers.brokers import LogsMessageBroker
 
-from .configurator import LoggersConfigurator, Logger
+from .configurator import Logger, LoggersConfigurator
 from .handlers import (
-    UvicornLoggingHandler,
-    SQLALchemyLoggingHandler,
     AIOrmqLoggingHandler,
+    SQLALchemyLoggingHandler,
+    UvicornLoggingHandler,
 )
 
 

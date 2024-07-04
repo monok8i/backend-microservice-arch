@@ -1,39 +1,33 @@
+from dataclasses import asdict, dataclass, is_dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any, TypeVar, Dict, TypeAlias, Union
+from typing import Any, Dict, TypeAlias, TypeVar, Union
 
-from pydantic import BaseModel
-from dataclasses import is_dataclass, asdict, dataclass
-
-from pydantic import validate_email
-from email_validator import EmailNotValidError
-
-from litestar.exceptions import NotFoundException, HTTPException
-
-from sqlalchemy import Select, StatementLambdaElement, select
-from sqlalchemy.orm import selectinload
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.ext.asyncio.scoping import async_scoped_session
-
-from advanced_alchemy.filters import FilterTypes
-from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService, OffsetPagination
-from advanced_alchemy.repository import SQLAlchemyAsyncRepository
 from advanced_alchemy.exceptions import (
     IntegrityError,
     NotFoundError,
 )
+from advanced_alchemy.filters import FilterTypes
+from advanced_alchemy.repository import SQLAlchemyAsyncRepository
+from advanced_alchemy.service import OffsetPagination, SQLAlchemyAsyncRepositoryService
+from email_validator import EmailNotValidError
+from litestar.exceptions import HTTPException, NotFoundException
+from pydantic import BaseModel, validate_email
+from sqlalchemy import Select, StatementLambdaElement, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio.scoping import async_scoped_session
+from sqlalchemy.orm import selectinload
 
 from app.core import settings
-from app.database.models import User, RefreshToken
-from app.domain.repositories import UserRepository, RefreshTokenRepository
+from app.database.models import RefreshToken, User
+from app.domain.repositories import RefreshTokenRepository, UserRepository
 from app.domain.schemas import PydanticUser, RefreshTokenCreate
+from app.lib.exceptions import EmailValidationException, IntegrityException
 from app.lib.security.crypt import generate_hashed_password, verify_password
-from app.lib.exceptions import IntegrityException, EmailValidationException
 from app.lib.security.jwt import (
     decode_jwt_token,
     encode_jwt_token,
     generate_refresh_token,
 )
-
 
 DataclassT = TypeVar("DataclassT", bound=dataclass)
 PydanticModelT = TypeVar("PydanticModelT", bound=BaseModel)

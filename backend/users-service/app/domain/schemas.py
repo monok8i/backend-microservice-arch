@@ -1,15 +1,13 @@
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Annotated, Optional
-from dataclasses import dataclass, field
-
-from pydantic import EmailStr
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto.config import DTOConfig
+from pydantic import EmailStr
 
 from app.database.models import User
-from app.lib.schemas import CamelizedBaseStructModel
-from app.lib.schemas import PydanticBaseModel
+from app.lib.schemas import CamelizedBaseStructModel, PydanticBaseModel
 
 base_user_config = DTOConfig(exclude=("hashed_password", "refresh_token"))
 UserOutputDTO = SQLAlchemyDTO[Annotated[User, base_user_config]]

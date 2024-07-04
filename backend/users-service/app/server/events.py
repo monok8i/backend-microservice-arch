@@ -1,11 +1,11 @@
-from typing import AsyncGenerator
-from litestar import Litestar
 from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 
 from aio_pika import Connection
+from litestar import Litestar
 
-from app.utils.message_brokers.setup import setup_message_brokers
 from app.utils.logging.setup import setup_logging_configurator
+from app.utils.message_brokers.setup import setup_message_brokers
 
 
 @asynccontextmanager

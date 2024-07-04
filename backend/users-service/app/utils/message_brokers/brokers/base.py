@@ -1,9 +1,9 @@
-from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
 from typing import Optional
 
+from aio_pika import Channel, Connection, Exchange
 from aiormq.abc import ConfirmationFrameType
-from aio_pika import Exchange, Connection, Channel
 
 
 @dataclass

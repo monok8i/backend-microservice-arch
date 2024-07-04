@@ -1,15 +1,11 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
-
 from pathlib import Path
-
 from typing import Optional
 
-from redis.asyncio import Redis
 from litestar.stores.redis import RedisStore
-
 from pydantic import AmqpDsn, PostgresDsn, field_validator
 from pydantic_core.core_schema import FieldValidationInfo
-
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 
@@ -61,7 +57,7 @@ class Database(CurrentEnvType):
 
     @field_validator("ENGINE", mode="before")
     def assemble_db_engine(
-        cls, v: Optional[AsyncEngine], info: FieldValidationInfo
+        self, v: Optional[AsyncEngine], info: FieldValidationInfo
     ) -> AsyncEngine:
         if isinstance(v, AsyncEngine):
             return v

@@ -1,23 +1,23 @@
 from typing import Annotated
 
 from litestar import Request, Response, post
-from litestar.exceptions import HTTPException
-from litestar.di import Provide
-from litestar.params import Body
 from litestar.controller import Controller
+from litestar.di import Provide
 from litestar.enums import RequestEncodingType
+from litestar.exceptions import HTTPException
+from litestar.params import Body
 from litestar.security.jwt import OAuth2Login
 
 from app.core import settings
 from app.database.models import User
-from app.domain.services import RefreshTokenService, UserService
+from app.domain.dependencies import provide_refresh_token_service, provide_users_service
+from app.domain.guards import o2auth
 from app.domain.schemas import (
     PydanticUserCreate,
     PydanticUserCredentials,
     UserOutputDTO,
 )
-from app.domain.dependencies import provide_users_service, provide_refresh_token_service
-from app.domain.guards import o2auth
+from app.domain.services import RefreshTokenService, UserService
 from app.lib.security.jwt import generate_refresh_token
 
 

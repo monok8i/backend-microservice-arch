@@ -1,12 +1,11 @@
 import secrets
-from typing import Any, Union
-import jwt
-
 from datetime import datetime, timedelta
-from app.core import settings
+from typing import Any, Union
 
+import jwt
 from litestar.exceptions import NotAuthorizedException
 
+from app.core import settings
 from app.domain.schemas import AccessTokenPayload
 
 from .utils import get_authorization_scheme_param

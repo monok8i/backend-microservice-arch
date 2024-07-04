@@ -1,23 +1,22 @@
 from typing import Annotated
 
-from litestar import delete, get, post, patch, put
-from litestar.params import Parameter, Body, Dependency
-from litestar.controller import Controller
-from litestar.di import Provide
-
 from advanced_alchemy.filters import FilterTypes
 from advanced_alchemy.service import OffsetPagination
+from litestar import delete, get, patch, post, put
+from litestar.controller import Controller
+from litestar.di import Provide
+from litestar.params import Body, Dependency, Parameter
 
 from app.database.models import User
-from app.domain.dependencies import provide_users_service, current_user
-from app.domain.services import UserService
+from app.domain.dependencies import current_user, provide_users_service
 from app.domain.guards import super_user_guard
 from app.domain.schemas import (
-    UserOutputDTO,
+    PydanticUser,
     PydanticUserCreate,
     PydanticUserUpdate,
-    PydanticUser,
+    UserOutputDTO,
 )
+from app.domain.services import UserService
 
 
 class UserController(Controller):
@@ -60,9 +59,8 @@ class UserController(Controller):
             ),
         ],
     ) -> User:
-        user = await service.create(data=data)
+        return await service.create(data=data)
 
-        return user
 
     @get("/", return_dto=None, cache=False)
     async def get_users(

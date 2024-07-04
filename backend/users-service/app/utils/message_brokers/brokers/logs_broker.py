@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional, Self
 
-from aiormq.abc import ConfirmationFrameType
 from aio_pika import ExchangeType, Message
+from aiormq.abc import ConfirmationFrameType
 
 from app.utils.message_brokers.exceptions import QueueNotFoundException
 

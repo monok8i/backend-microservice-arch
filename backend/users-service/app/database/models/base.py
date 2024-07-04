@@ -14,11 +14,11 @@ class Base(AsyncAttrs, DeclarativeBase):
     __table_args__ = {"extend_existing": True}
 
     @declared_attr.directive
-    def __tablename__(cls) -> str:
-        return f"{cls.__name__.lower()}s"
+    def __tablename__(self) -> str:
+        return f"{self.__name__.lower()}s"
 
     @declared_attr
-    def id(cls) -> Mapped[int]:
+    def id(self) -> Mapped[int]:
         return mapped_column(Integer, primary_key=True, index=True)
 
     created_at: Mapped[datetime] = mapped_column(

@@ -1,6 +1,6 @@
-import msgspec
 from typing import Any
 
+import msgspec
 from pydantic import BaseModel, ConfigDict
 
 

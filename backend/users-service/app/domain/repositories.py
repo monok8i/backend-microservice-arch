@@ -1,6 +1,6 @@
 from advanced_alchemy.repository import SQLAlchemyAsyncRepository
 
-from app.database.models import User, RefreshToken
+from app.database.models import RefreshToken, User
 
 
 class UserRepository(SQLAlchemyAsyncRepository[User]):

@@ -1,11 +1,10 @@
 import asyncio
 import logging
-
 from typing import Any
 
-from .base import BaseLoggingHandler
-
 from app.utils.message_brokers.brokers import LogsMessageBroker
+
+from .base import BaseLoggingHandler
 
 
 class UvicornLoggingHandler(BaseLoggingHandler):
@@ -20,6 +19,6 @@ class UvicornLoggingHandler(BaseLoggingHandler):
 
     def emit(self, record: logging.LogRecord) -> Any:
         logger = logging.getLogger(self.get_name())
-        formatted_record = self.format(record)
+        self.format(record)
         logger.info(record)
         asyncio.create_task(self.send_log(self.get_name(), record), name="log")
