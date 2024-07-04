@@ -28,7 +28,9 @@ async def current_user_from_token(
     return user
 
 
-async def super_user_guard(connection: ASGIConnection[Any, Any, Any, Any], _: BaseRouteHandler) -> None:
+async def super_user_guard(
+    connection: ASGIConnection[Any, Any, Any, Any], _: BaseRouteHandler
+) -> None:
     if connection.user.is_superuser:
         return
     raise PermissionDeniedException(detail="Insufficient privileges")
@@ -38,6 +40,8 @@ o2auth = JWTAuth[User](
     retrieve_user_handler=current_user_from_token,
     token_secret=settings.auth.JWT_PRIVATE_KEY_PATH.read_text(),
     algorithm=settings.auth.ALGORITHM,
-    default_token_expiration=timedelta(minutes=settings.auth.ACCESS_TOKEN_EXPIRE_MINUTES),
+    default_token_expiration=timedelta(
+        minutes=settings.auth.ACCESS_TOKEN_EXPIRE_MINUTES
+    ),
     exclude=["/api/schema", "/api/auth/"],
 )

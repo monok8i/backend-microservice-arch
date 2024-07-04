@@ -80,7 +80,9 @@ class UserService(SQLAlchemyAsyncRepositoryService[User]):
 
     async def get_users(self, *filters: FilterTypes) -> OffsetPagination[PydanticUser]:
         results, count = await self.list_and_count(*filters)
-        return self.to_schema(data=results, total=count, schema_type=PydanticUser, filters=filters)
+        return self.to_schema(
+            data=results, total=count, schema_type=PydanticUser, filters=filters
+        )
 
     async def create(self, *, data: InputModelT) -> User:
         try:
@@ -169,7 +171,7 @@ class RefreshTokenService(SQLAlchemyAsyncRepositoryService[RefreshToken]):
         super().__init__(
             session, statement, auto_expunge, auto_refresh, auto_commit, **repo_kwargs
         )
-        
+
     # async def access_token(self, user_id: int) -> Token:
     #     if not user_id:
     #         raise

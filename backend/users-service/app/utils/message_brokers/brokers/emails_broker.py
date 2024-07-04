@@ -22,7 +22,7 @@ class EmailsMessageBroker(BaseMessageBroker):
         for queue_name in self.queues:
             queue = await self._channel.declare_queue(name=queue_name)
             await queue.bind(self._exchange, routing_key=queue_name)
-    
+
         return self
 
     async def publish(self, queue: str, body: str) -> Optional[ConfirmationFrameType]:

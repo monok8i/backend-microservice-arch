@@ -79,8 +79,12 @@ def provide_created_filter(
 
 
 def provide_search_filter(
-    field: StringOrNone = Parameter(title="Field to search", query="searchField", default=None, required=False),
-    search: StringOrNone = Parameter(title="Field to search", query="searchString", default=None, required=False),
+    field: StringOrNone = Parameter(
+        title="Field to search", query="searchField", default=None, required=False
+    ),
+    search: StringOrNone = Parameter(
+        title="Field to search", query="searchString", default=None, required=False
+    ),
     ignore_case: BooleanOrNone = Parameter(
         title="Search should be case sensitive",
         query="searchIgnoreCase",
@@ -100,12 +104,18 @@ def provide_search_filter(
     Returns:
         SearchFilter: Filter for searching fields.
     """
-    return SearchFilter(field_name=field, value=search, ignore_case=ignore_case or False)  # type: ignore[arg-type]
+    return SearchFilter(
+        field_name=field, value=search, ignore_case=ignore_case or False
+    )  # type: ignore[arg-type]
 
 
 def provide_order_by(
-    field_name: StringOrNone = Parameter(title="Order by field", query="orderBy", default=None, required=False),
-    sort_order: SortOrderOrNone = Parameter(title="Field to search", query="sortOrder", default="desc", required=False),
+    field_name: StringOrNone = Parameter(
+        title="Order by field", query="orderBy", default=None, required=False
+    ),
+    sort_order: SortOrderOrNone = Parameter(
+        title="Field to search", query="sortOrder", default="desc", required=False
+    ),
 ) -> OrderBy:
     """Add offset/limit pagination.
 
@@ -135,7 +145,7 @@ def provide_updated_filter(
 
     Returns:
         BeforeAfter: Filter for scoping query to instance update date/time.
-    
+
     Note:
         Time must have `RFC3339` format. Example: 2024-05-24T19:28:06.510622Z
     """
@@ -218,11 +228,21 @@ def create_collection_dependencies() -> dict[str, Provide]:
         dict[str, Provide]: Dictionary of provides for pagination endpoints.
     """
     return {
-        LIMIT_OFFSET_DEPENDENCY_KEY: Provide(provide_limit_offset_filter, sync_to_thread=False),
-        UPDATED_FILTER_DEPENDENCY_KEY: Provide(provide_updated_filter, sync_to_thread=False),
-        CREATED_FILTER_DEPENDENCY_KEY: Provide(provide_created_filter, sync_to_thread=False),
+        LIMIT_OFFSET_DEPENDENCY_KEY: Provide(
+            provide_limit_offset_filter, sync_to_thread=False
+        ),
+        UPDATED_FILTER_DEPENDENCY_KEY: Provide(
+            provide_updated_filter, sync_to_thread=False
+        ),
+        CREATED_FILTER_DEPENDENCY_KEY: Provide(
+            provide_created_filter, sync_to_thread=False
+        ),
         ID_FILTER_DEPENDENCY_KEY: Provide(provide_id_filter, sync_to_thread=False),
-        SEARCH_FILTER_DEPENDENCY_KEY: Provide(provide_search_filter, sync_to_thread=False),
+        SEARCH_FILTER_DEPENDENCY_KEY: Provide(
+            provide_search_filter, sync_to_thread=False
+        ),
         ORDER_BY_DEPENDENCY_KEY: Provide(provide_order_by, sync_to_thread=False),
-        FILTERS_DEPENDENCY_KEY: Provide(provide_filter_dependencies, sync_to_thread=False),
+        FILTERS_DEPENDENCY_KEY: Provide(
+            provide_filter_dependencies, sync_to_thread=False
+        ),
     }

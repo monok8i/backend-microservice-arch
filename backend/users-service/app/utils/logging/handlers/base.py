@@ -15,7 +15,7 @@ class BaseLoggingHandler(logging.Handler):
         broker_instance: LogsMessageBroker,
     ):
         self.broker_instance = broker_instance
-        
+
         logging.Handler.__init__(self)
         self._name = name
         self.level = level

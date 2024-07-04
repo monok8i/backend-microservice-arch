@@ -35,6 +35,7 @@ class RabbitMQConfig:
     def create_state_keys(self) -> dict[str, Any]:
         return {self.dependency_key: self.create_connection}
 
+
 class RabbitMQPlugin(InitPluginProtocol):
     def __init__(self, config: RabbitMQConfig) -> None:
         self._config = config

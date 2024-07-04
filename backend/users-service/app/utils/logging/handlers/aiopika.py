@@ -22,6 +22,4 @@ class AIOrmqLoggingHandler(BaseLoggingHandler):
         logger = logging.getLogger(self.get_name())
         formatted_record = self.format(record)
         logger.info(record)
-        asyncio.create_task(
-            self.send_log(self.get_name(), record), name="log"
-        )
+        asyncio.create_task(self.send_log(self.get_name(), record), name="log")
