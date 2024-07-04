@@ -3,10 +3,10 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 from aiormq.abc import ConfirmationFrameType
-from aio_pika import Exchange, Connection, Channel, Queue
+from aio_pika import Exchange, Connection, Channel
 
 
-@dataclass(frozen=True)
+@dataclass
 class BaseMessageBroker(ABC):
     connection: Connection
     queues: list[str] = field(default_factory=list)

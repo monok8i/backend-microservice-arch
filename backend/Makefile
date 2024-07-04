@@ -29,3 +29,7 @@ stop:
 .PHONY: drop-all
 drop-all:
 	${dc} -f ${dc_yaml} down
+
+.PHONY: logs
+logs:
+	docker logs -f litestar-users

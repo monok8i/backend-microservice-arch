@@ -1,37 +1,30 @@
 import logging
+from typing import Any, Optional
 
-from dataclasses import dataclass
-from aio_pika.abc import AbstractConnection
+from aiormq.types import ConfirmationFrameType
 
-from app.utils.message_brokers import RabbitMQPublisher
+from app.utils.message_brokers.brokers import LogsMessageBroker
 
 
-@dataclass(kw_only=True)
 class BaseLoggingHandler(logging.Handler):
-    name: str
-    level: int
-    formatter: logging.Formatter = None
+    def __init__(
+        self,
+        name: str,
+        level: int,
+        formatter: logging.Formatter,
+        broker_instance: LogsMessageBroker,
+    ):
+        self.broker_instance = broker_instance
+        
+        logging.Handler.__init__(self)
+        self._name = name
+        self.level = level
+        self.formatter = formatter
 
-    _broker_instance: RabbitMQPublisher
-    _broker_connection: AbstractConnection
+    async def send_log(
+        self, queue: str, formatted_record: str
+    ) -> Optional[ConfirmationFrameType]:
+        return await self.broker_instance.publish(queue=queue, body=formatted_record)
 
-    async def send_log(self, formatted_record: str) -> None: ...
-
-    # def emit(self, record: logging.LogRecord) -> str:
-    #     formatted_log = self.format(record)
-
-
-@dataclass
-class AIOPikaLoggingHandler(BaseLoggingHandler): ...
-
-
-@dataclass
-class SQLAlchemyLoggingHandler(BaseLoggingHandler): ...
-
-
-@dataclass
-class UvicornLoggingHandler(BaseLoggingHandler): ...
-
-
-@dataclass
-class _: ...
+    def emit(self, record: logging.LogRecord) -> Any:
+        raise NotImplementedError

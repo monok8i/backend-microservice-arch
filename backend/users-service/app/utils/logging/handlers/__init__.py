@@ -1,5 +1,5 @@
 from .sqlalchemy import SQLALchemyLoggingHandler
-from .aiopika import AIOPikaLoggingHandler
+from .aiopika import AIOrmqLoggingHandler
 from .uvicorn import UvicornLoggingHandler
 
-__all__ = ["SQLALchemyLoggingHandler", "AIOPikaLoggingHandler", "UvicornLoggingHandler"]
+__all__ = ["SQLALchemyLoggingHandler", "AIOrmqLoggingHandler", "UvicornLoggingHandler"]

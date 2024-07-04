@@ -4,7 +4,7 @@ from typing import Any
 from litestar.config.app import AppConfig
 from litestar.plugins import InitPluginProtocol
 
-from aio_pika.abc import AbstractConnection
+from aio_pika import Connection
 from aio_pika.connection import connect
 
 
@@ -14,13 +14,13 @@ class RabbitMQConfig:
     port: int = 5672
     vhost: str = "/"
     credentials: dict[str, str] = None
-    connection: type[AbstractConnection] = None
+    connection: type[Connection] = None
 
     dependency_key: str = "rmq_session"
 
     async def create_connection(
         self,
-    ) -> AbstractConnection:
+    ) -> Connection:
         if not self.connection:
             return await connect(
                 host=self.host,

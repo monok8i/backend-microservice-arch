@@ -1,17 +1,17 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Self
 
 from aiormq.abc import ConfirmationFrameType
-from aio_pika import ExchangeType, Message, Queue
+from aio_pika import ExchangeType, Message
 
 from app.utils.message_brokers.exceptions import QueueNotFoundException
 
 from .base import BaseMessageBroker
 
 
-@dataclass(frozen=True)
+@dataclass
 class LogsMessageBroker(BaseMessageBroker):
-    async def setup(self) -> None:
+    async def setup(self) -> Self:
         if not self._channel:
             self._channel = await self.connection.channel()
         if not self._exchange:
@@ -20,8 +20,10 @@ class LogsMessageBroker(BaseMessageBroker):
             )
 
         for queue_name in self.queues:
-            queue = Queue(channel=self._channel, name=queue_name)
-            await queue.bind(self._exchange, routing_key=queue_name)
+            queue = await self._channel.declare_queue(name=queue_name)
+            await queue.bind(exchange=self._exchange, routing_key=queue_name)
+
+        return self
 
     async def publish(self, queue: str, body: str) -> Optional[ConfirmationFrameType]:
         if queue not in self.queues:

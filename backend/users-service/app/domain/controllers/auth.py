@@ -11,7 +11,11 @@ from litestar.security.jwt import OAuth2Login
 from app.core import settings
 from app.database.models import User
 from app.domain.services import RefreshTokenService, UserService
-from app.domain.schemas import PydanticUserCreate, PydanticUserCredentials, UserOutputDTO
+from app.domain.schemas import (
+    PydanticUserCreate,
+    PydanticUserCredentials,
+    UserOutputDTO,
+)
 from app.domain.dependencies import provide_users_service, provide_refresh_token_service
 from app.domain.guards import o2auth
 from app.lib.security.jwt import generate_refresh_token
@@ -38,11 +42,15 @@ class AuthController(Controller):
         user_service: UserService,
         data: Annotated[
             PydanticUserCreate,
-            Body(title="Register", description="Register a new user")
+            Body(title="Register", description="Register a new user"),
         ],
     ) -> User:
         user = await user_service.create(data=data)
-        request.app.emit("user_created", email=user.email, broker_connection=request.app.dependencies.get("rmq_session"))
+        request.app.emit(
+            "user_created",
+            email=user.email,
+            emails_broker=request.app.dependencies.get("emails_broker"),
+        )
 
         return user
 

@@ -79,6 +79,9 @@ class Database(CurrentEnvType):
 class LogSettings(CurrentEnvType):
     """Logger configuration"""
 
+    FORMAT: str = "%(levelname)s | %(asctime)s | %(name)s - %(module)s - %(message)s"
+    """Log format"""
+
     EXCLUDE_PATHS: str = r"\A(?!x)x"
     """Regex to exclude paths from logging."""
     HTTP_EVENT: str = "HTTP"
@@ -102,7 +105,8 @@ class LogSettings(CurrentEnvType):
     """Level to log uvicorn access logs."""
     UVICORN_ERROR_LEVEL: int = 20
     """Level to log uvicorn error logs."""
-    AIOPIKA_LEVEL: int = 20
+    AIORMQ_LEVEL: int = 20
+    """Level to log aiormq connection logs."""
 
 
 class RedisSettings(CurrentEnvType):

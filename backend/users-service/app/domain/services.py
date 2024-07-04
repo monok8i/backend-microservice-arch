@@ -169,7 +169,7 @@ class RefreshTokenService(SQLAlchemyAsyncRepositoryService[RefreshToken]):
         super().__init__(
             session, statement, auto_expunge, auto_refresh, auto_commit, **repo_kwargs
         )
-
+        
     # async def access_token(self, user_id: int) -> Token:
     #     if not user_id:
     #         raise

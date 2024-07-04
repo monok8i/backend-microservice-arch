@@ -58,9 +58,9 @@ log_config = StructlogConfig(
                     "level": settings.logging.SQLALCHEMY_LEVEL,
                     "handlers": ["queue_listener"],
                 },
-                "aio_pika": {
+                "aiormq.connection": {
                     "propagate": False,
-                    "level": settings.logging.AIOPIKA_LEVEL,
+                    "level": settings.logging.AIORMQ_LEVEL,
                     "handlers": ["queue_listener"],
                 },
             },
