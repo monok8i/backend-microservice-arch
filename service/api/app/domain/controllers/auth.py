@@ -64,9 +64,7 @@ class AuthController(Controller):
             Body(title="OAuth2 Login", media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Response:
-        # create user
         user = await user_service.authenticate(data)
-        # create refresh_token in db and return it in cookie
         response = o2auth.login(str(user.id))
 
         refresh_token = generate_refresh_token()
@@ -112,7 +110,7 @@ class AuthController(Controller):
         access_token_header = request.headers.get("Authorization")
         if not access_token_header:
             raise HTTPException(
-                detail="Authorization header with expired access token must be in request"
+                detail="Authorization header with expired access token must be in request"  # noqa: E501
             )
 
         new_access_token = await refresh_token_service.refresh_access_token(

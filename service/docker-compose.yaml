@@ -10,7 +10,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./users-service/app/:/service/app/
+      - ./api/app/:/service/app/
     restart: on-failure
     depends_on:
       postgres:
@@ -57,8 +57,6 @@ services:
       start_period: 10s
     expose:
       - "${REDIS_PORT}"
-    # volumes:
-    #   - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server
     networks:
       - backend-network
@@ -78,29 +76,9 @@ services:
       start_period: 10s
     volumes:
       - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
-      # - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
       - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
     networks:
       - backend-network
-
-  # email_service:
-  #   image: email-service:latest
-  #   container_name: email-service
-  #   build:
-  #     context: ./email-service/
-  #     dockerfile: Dockerfile
-  #   develop:
-  #     watch:
-  #       - action: sync
-  #         path: ./email-service/
-  #         target: ./app/
-  #   ports:
-  #     - "50:50"
-  #   restart: always
-  #   depends_on:
-  #     - rabbitmq
-  #   networks:
-  #     - backend
 
 networks:
   backend-network:

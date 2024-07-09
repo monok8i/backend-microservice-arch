@@ -61,7 +61,6 @@ class UserController(Controller):
     ) -> User:
         return await service.create(data=data)
 
-
     @get("/", return_dto=None, cache=False)
     async def get_users(
         self,
