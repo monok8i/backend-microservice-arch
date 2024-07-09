@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "litestar-users-service"
 version = "0.1.0"
-description = "The basic users service is written in Litestar"
+description = "The basic users API is written in Litestar"
 authors = ["monok8i <didkivskiyyura725@gmail.com>"]
 readme = "README.md"
 
