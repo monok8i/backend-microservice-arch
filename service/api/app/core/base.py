@@ -56,8 +56,9 @@ class Database(CurrentEnvType):
         )
 
     @field_validator("ENGINE", mode="before")
+    @classmethod
     def assemble_db_engine(
-        self, v: Optional[AsyncEngine], info: FieldValidationInfo
+        cls, v: Optional[AsyncEngine], info: FieldValidationInfo
     ) -> AsyncEngine:
         if isinstance(v, AsyncEngine):
             return v
